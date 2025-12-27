@@ -1,0 +1,31 @@
+services:
+  # 开发环境服务
+  web-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/usr/share/nginx/html  # 实时同步开发文件
+    environment:
+      - NODE_ENV=development
+  
+  # 生产环境服务（本地测试用）
+  web-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    environment:
+      - NODE_ENV=production
+
+  # 可选：添加一个MySQL数据库服务
+  # db:
+  #   image: mysql:8
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpass
+  #     MYSQL_DATABASE: mydb
+  #   ports:
+  #     - "3306:3306"

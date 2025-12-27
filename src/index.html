@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的网站</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 测试页面</h1>
+            <p>这是一个在Mac开发，部署到Linux服务器的示例</p>
+        </header>
+        
+        <main>
+            <section>
+                <h2>系统信息</h2>
+                <ul>
+                    <li>部署环境：Ubuntu Linux</li>
+                    <li>容器技术：Docker</li>
+                    <li>Web服务器：Nginx</li>
+                </ul>
+            </section>
+            
+            <section>
+                <h2>部署状态</h2>
+                <div id="status">
+                    <p class="loading">正在检测部署状态...</p>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>部署时间：<span id="deploy-time"></span></p>
+        </footer>
+    </div>
+    
+    <script>
+        // 显示部署时间
+        document.getElementById('deploy-time').textContent = 
+            new Date().toLocaleString('zh-CN');
+        
+        // 模拟状态检测
+        setTimeout(() => {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `
+                <p class="success">✅ 部署成功！</p>
+                <p>服务运行正常，可通过公网IP访问</p>
+            `;
+        }, 1500);
+    </script>
+</body>
+</html>

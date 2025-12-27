@@ -1,0 +1,12 @@
+# 忽略文件
+.git
+.gitignore
+node_modules
+.env
+*.log
+README.md
+.vscode
+.idea
+*.md
+Dockerfile.dev
+docker-compose.yml

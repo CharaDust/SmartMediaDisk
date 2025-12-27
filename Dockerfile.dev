@@ -1,0 +1,14 @@
+# 开发环境配置
+FROM nginx:alpine
+
+# 安装必要的工具（开发时可能需要）
+RUN apk add --no-cache curl vim
+
+# 复制网页文件
+COPY src/ /usr/share/nginx/html/
+
+# 暴露端口
+EXPOSE 80
+
+# 启动Nginx
+CMD ["nginx", "-g", "daemon off;"]
