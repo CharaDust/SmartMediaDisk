@@ -39,6 +39,12 @@
 
 听起来像是在许愿。。。
 ## 使用方法 / Usage
+### 构建
+在项目文件夹内打开终端  
+使用`Windows`/`macOS`/`Linux`命令行运行
+```bash
+docker compose build
+```
 ### 开发环境
 使用`Windows`/`macOS`/`Linux`命令行运行
 ```bash
