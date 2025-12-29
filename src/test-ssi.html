@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SSI 测试页面</title>
+</head>
+<body>
+    <h1>SSI 功能测试</h1>
+    
+    <h2>测试 1：包含文件</h2>
+    <!--# include virtual="/components/navbar.html" -->
+    
+    <h2>测试 2：显示变量</h2>
+    <p>日期：<!--# echo var="date_local" --></p>
+    <p>文档名称：<!--# echo var="DOCUMENT_NAME" --></p>
+    <p>请求 URI：<!--# echo var="REQUEST_URI" --></p>
+    
+    <h2>测试 3：条件判断</h2>
+    <!--# if expr="$HTTP_USER_AGENT = /MSIE/" -->
+        <p>检测到 Internet Explorer 浏览器</p>
+    <!--# else -->
+        <p>不是 Internet Explorer 浏览器</p>
+    <!--# endif -->
+    
+    <h2>测试 4：执行命令</h2>
+    <p>当前时间：<!--# echo var="DATE_LOCAL" --></p>
+</body>
+</html>

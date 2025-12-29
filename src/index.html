@@ -1,47 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bootstrap 5 示例网站</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/mhDoLbDldZc3qpsJHpLogda//BVZbgYuw6kof4u2FrCedxOtgRZDTHgHUhOCVim" crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <title>Bootstrap Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
-    <!--  -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Media Cube </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarText">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">登入</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" style="color: blueviolet;" aria-current="page" href="#">浏览</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">传输</a>
-                    </li>
-                </ul>
-                <span class="navbar-text">
-                    你吃爆米花吗？
-                </span>
-            </div>
-        </div>
-    </nav>
 
+<body class="p-3 m-0 border-0 bd-example">
 
+    <!-- 导航栏 -->
+    <!--# include virtual="/innerHTML/nav.html" -->
 
+    <!-- 正文 -->
+    <div class="container" style="height: 40px;"></div>
     <div class="container">
         <header>
             <h1>🚀 测试页面</h1>
         </header>
-        
+
         <main>
             <section>
                 <h2>系统信息</h2>
@@ -51,7 +31,7 @@
                     <li>Web服务器：Nginx</li>
                 </ul>
             </section>
-            
+
             <section>
                 <h2>部署状态</h2>
                 <div id="status">
@@ -59,17 +39,17 @@
                 </div>
             </section>
         </main>
-        
+
         <footer>
             <p>部署时间：<span id="deploy-time"></span></p>
         </footer>
     </div>
-    
+
     <script>
         // 显示部署时间
-        document.getElementById('deploy-time').textContent = 
+        document.getElementById('deploy-time').textContent =
             new Date().toLocaleString('zh-CN');
-        
+
         // 模拟状态检测
         setTimeout(() => {
             const statusDiv = document.getElementById('status');
@@ -80,5 +60,10 @@
             `;
         }, 1500);
     </script>
+    <a href="test-ssi.html">lnk</a>
+
+
+
 </body>
+
 </html>
