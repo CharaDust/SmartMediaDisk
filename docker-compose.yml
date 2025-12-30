@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:80" # 转发端口至8080
     volumes:
-      - ./src:/usr/share/nginx/html  # 实时同步开发文件
+      - ./src/html:/usr/share/nginx/html  # 实时同步开发文件
     environment:
       - NODE_ENV=development
   
