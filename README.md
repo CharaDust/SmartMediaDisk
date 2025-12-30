@@ -46,17 +46,15 @@
 docker compose build
 ```
 ### 开发环境
-使用`Windows`/`macOS`/`Linux`命令行运行
+使用`Windows`/`macOS`/`Linux`命令行运行所有服务
 ```bash
-docker-compose up web-dev
+docker-compose up
 ```
-使用浏览器打开`http://localhost:8080`观察运行结果
-### 生产环境（本地测试）
-使用`Linux`命令行运行
-```bash
-docker-compose up web-prod
-```
-使用浏览器打开`http://localhost:8081`观察运行结果
+- 使用浏览器打开`http://localhost:8080`观察前端运行结果（Nginx）
+	- 应该能看到一个简易的主页
+- 使用浏览器打开`http://localhost:8000`观察后端运行结果（Django）
+	- 应该能看到一串文本“Hello World（Django）”
+
 ### 关闭服务
 使用`Windows`/`macOS`/`Linux`命令行运行以下命令以关闭所有服务
 ```bash
