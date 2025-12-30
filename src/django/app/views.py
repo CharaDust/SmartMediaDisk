@@ -1,4 +1,3 @@
-# django_app/myapp/views.py
 from django.http import JsonResponse
 from django.shortcuts import render
 
