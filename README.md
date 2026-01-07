@@ -4,48 +4,16 @@
 ## 功能 / Feature
 - 暂定
 ## 需要注意 / Warn
-以下需要注意的问题在github教学后将会移动至Issues页面
-### 设计更名问题
-**诉求：**  
-- 删除设计的名称包含的“基于ASP与Access”这一限定技术的文本
-
-**原因：**  
-在资料搜索的过程中发现
-- ASPX / ASP.NET的应用范围较为狭窄，仅原生支持具有IIS功能的Windows服务器，在Linux运行时需要花大量时间做兼容工作。
-	- ASP.NET 需要额外花时间学习C#语言来实现后端功能。C#是属于典型的面向对象编程语言，但实现方法比C++要更难，对于面向对象编程而言，需要开发者拥有C++（不能是C）编程基础才能更顺利地学习。
-	- 做好后端功能后，我们仍要使用其他技术实现邮件服务器。
-- Access数据库也拥有同样的问题，即只能在Windows上预览与编辑。此外，如果需要进行web操作（如执行“注册用户”命令），在不学习复杂的Basic宏脚本的情况下只能去软件内手动修改表的内容。
-
-**综上所述：**
-若设计的名称包含“基于ASP与Access”这一限定技术的文本，建议删除，仅保留主体部分。或者仅删除“ASP与”，Access还能够通过单向映射来模拟，但也不建议这样做，因为这会徒增不必要的工作量  
-### 设计所使用的技术
-**诉求：**  
-该项目未来所需要使用的技术：  
-- Django（python） - 用于实现网页后端与邮件服务器
-- SQLite - 用于实现数据库功能
-- Bootstrap - 用于重写现代化网页
-
-**原因：**
-基于搜索引擎与AI的推荐，以及各方面的资料，实现网络存储和邮件转发的基本功能所用到的最简单技术栈就是这些。  
-在此之前，所谓指导老师还在给我提“建议”：
-- 前端开发加个Vue，TypeScript，还有React
-- 后端开发加个FastAPI，Django
-- 还有你这实时性再加个Node，还有Express
-- 你这开服务器得用Nginx，挂载Gunicorn或者uWSGI
-- 文件服务用WebDAV，还有apache
-- 这个数据库还需要MySQL
-- 相册功能还可以加入地图预览，弄个高德的API上去
-- 咱们是通信工程的，还得融合几个通信接口，传感器啊什么的
-
-听起来像是在许愿。。。
+- 非紧急的注意事项已移动至议题（issues）页面
+- 暂无紧急注意事项
 ## 使用方法 / Usage
-### 构建
+### 构建（开发）
 在项目文件夹内打开终端  
 使用`Windows`/`macOS`/`Linux`命令行运行
 ```bash
 docker compose build
 ```
-### 开发环境
+### 创建容器并运行（开发）
 使用`Windows`/`macOS`/`Linux`命令行运行所有服务
 ```bash
 docker compose up
@@ -54,7 +22,57 @@ docker compose up
 	- 应该能看到一个简易的主页
 - 使用浏览器打开`http://localhost:8000`观察后端运行结果（Django）
 	- 应该能看到一串文本“Hello World（Django Default APP）”
+### 关闭服务（开发）
+使用`Windows`/`macOS`/`Linux`命令行运行以下命令以关闭所有服务
+```bash
+docker compose down
+```
+### 创建镜像并迁移（生产）
+该教程为离线迁移教程，适用于兼容性好且当你无法轻松访问docker hub服务时使用。  
+虽然有更好的registry推送可以使用，但对于本项目而言，并不推荐使用这种做法，因为开发阶段的代码没有做任何裁剪，镜像包大小总计已经超过1GB，不建议通过互联网传输。
+##### `步骤1:`
+使用`Windows`/`macOS`/`Linux`命令行运行以下命令以打包镜像  
+```shell
+docker save \
+  -o smartmediadisk-images.tar \
+  smartmediadisk-django-dev:latest \
+  smartmediadisk-nginx-dev:latest
+```
+- 此命令已包含所用到的服务包，
+##### `步骤2:`
+将文件`smartmediadisk-images.tar`通过任意方式转移至生产环境（U盘，网络传输等）
+##### `步骤3:`
+使用`Windows`/`macOS`/`Linux`命令行运行以下命令以加载镜像  
+```bash
+docker load -i /home/yourusername/smartmediadisk-images.tar
+```
+##### `步骤4:`
+项目中有一个用于生产环境配置的文件，你可以直接使用它，或者自己再写一份，他们之间的区别是：
+
+| 条目          | 生产环境                      | 开发环境                 |
+| ----------- | ------------------------- | -------------------- |
+| 文件名         | `docker-compose.yml.prod` | `docker-compose.yml` |
+| 启动方式        | 加载镜像                      | 构建镜像                 |
+| 存储卷         | 已经固定                      | 挂载中，可以随时修改           |
+| image       | ✔︎                        | ✘                    |
+| build       | ✘                         | ✔︎                   |
+| port        | ✔︎                        | ✔︎                   |
+| volume      | ✘                         | ✔︎                   |
+| environment | ✔︎                        | ✔︎                   |
+| depends_on  | ✔︎                        | ✔︎                   |
+##### `步骤5:`
+从镜像构建容器并运行。  
+- 如果生产设备安装了webUI面板，可以登录面板（如Portainer面板`<http://ip:9000>`）创建一个stack，在构建方式（Build method）编辑框内填入生产环境构建文件的内容，随后保存运行，容器就成功启动了。可以转到结果测试中测试迁移结果
+- 如果生产设备仅安装了Docker基础服务，则按照下面的方法构建容器
+	- 将生产环境的构建文件传输到刚刚传输镜像包的文件夹目录内。
+	- 随后使用终端运行`docker-compose up -d`来从镜像构建容器。
+##### `结果测试`
+- 使用浏览器打开`http://ip:8080`观察前端运行结果（Nginx）
+	- 应该能看到一个简易的主页
+- 使用浏览器打开`http://ip:8000`观察后端运行结果（Django）
+	- 应该能看到一串文本“Hello World（Django Default APP）”
 ## 调试与修改 / Debug & Modify
+以下操作应在开发环境内完成，不建议在生产环境使用
 ### 设计静态前端
 修改以下文件夹内的内容，得益于Volume映射，保存文件后刷新网页即可看到修改内容
 ```Path
@@ -63,19 +81,23 @@ docker compose up
 ### 设计后端
 设计后端略显麻烦，需要自行编写或导入现有Django app，然后注册它，最后为它分配URL
 #### 创建app模版
-确保你的开发环境（非Docker环境）已安装Python、pip、Django及其所需依赖  
+确保你的开发环境（非Docker环境）已安装`Python`、`pip`、`Django`及其所需依赖  
 在以下目录内打开终端
 ```Path
 /src/django
 ```
-运行如下命令创建app模版
-```bash
-//Linux指令
-python manage.py startapp 你的app名字
-//macOS指令
-python3 manage.py startapp 你的app名字
-//Windows 指令
+运行如下命令创建app模版：
+- `Windows`命令
+```powershell
 py manage.py startapp 你的app名字
+```
+- `macOS`命令
+```zsh
+python3 manage.py startapp 你的app名字
+```
+- `Linux`命令
+```shell
+python manage.py startapp 你的app名字
 ```
 或者复制该目录下的`empty`文件夹并直接粘贴，里面包含已创建好的app模版  
 #### 注册app
@@ -133,11 +155,7 @@ path('api/自定义链接/', include('你的app名字.urls')), # 自定义app
 ```
 #### 参考手册
 如果你需要实现更多高级功能，请参照[Django 官方文档（中文）](https://docs.djangoproject.com/zh-hans/6.0/)
-### 关闭服务
-使用`Windows`/`macOS`/`Linux`命令行运行以下命令以关闭所有服务
-```bash
-docker compose down
-```
+
 ## 任务列表 / Todo
 以下为完成该项目所需要做的事情以及需要学习的技术  
 ### 前端

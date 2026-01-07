@@ -1,0 +1,65 @@
+# 共享存储池 (在 Portainer 中，这些卷通常会自动创建或在服务中声明)
+# 注意：如果你不打算在 Portainer 中使用卷管理，可以省略这部分
+# volumes:
+#   sqlite_data: # 如果需要持久化 SQLite 数据
+#   static_volume: # 如果需要持久化静态文件
+
+# 服务
+services:
+  # Django 开发环境服务 (使用已存在的镜像)
+  django-dev:
+    image: smartmediadisk-django-dev:latest # 指向已加载的镜像
+    # 由于你已经加载了镜像，不需要 build 部分
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.django.dev
+    ports:
+      - "8000:8000" # 映射宿主机 8000 端口到容器 8000 端口
+    # 注意：在 Linux 上，你需要将宿主机的路径映射到容器，但考虑到你已经加载了镜像，这取决于你如何部署。
+    # 如果你希望容器内代码与宿主机同步，你需要将宿主机的代码目录挂载进去。
+    # 但因为你是在 Linux 上运行已有镜像，通常不需要挂载源码目录。
+    # volumes:
+    #   - ./src/django:/app # 如果需要挂载源码 (不推荐用于生产或仅镜像运行)
+    #   - sqlite_data:/app/db # 如果需要持久化数据库 (SQLite)
+    #   - static_volume:/app/staticfiles # 如果需要持久化静态文件
+
+    environment:
+      - DEBUG=1
+    # 通常，如果你是直接使用镜像，而不是从源码构建，环境变量应该在构建时就设置好了。
+    # 但如果你想覆盖或添加，可以在这里设置。
+
+  # nginx 开发环境服务 (使用已存在的镜像)
+  nginx-dev:
+    image: smartmediadisk-nginx-dev:latest # 指向已加载的镜像
+    # 由于你已经加载了镜像，不需要 build 部分
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.nginx.dev
+
+    ports:
+      - "8080:80" # 映射宿主机 8080 端口到容器 80 端口
+    # volumes:
+    #   - ./src/html:/usr/share/nginx/html # 如果需要挂载 HTML 源码 (不推荐用于生产或仅镜像运行)
+    #   - static_volume:/staticfiles # 如果需要挂载静态文件 (不推荐用于生产或仅镜像运行)
+
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - django-dev
+
+  # 如果你有 MySQL 数据库服务，可以取消注释并配置
+  # db:
+  #   image: mysql:8
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpass
+  #     MYSQL_DATABASE: mydb
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - db_data:/var/lib/mysql # 持久化数据库数据
+
+# 如果你使用了上面注释掉的卷，需要定义它们
+# volumes:
+#   db_data: # 持久化 MySQL 数据
+#   sqlite_data: # 持久化 SQLite 数据 (如果需要)
+#   static_volume: # 持久化静态文件 (如果需要)
