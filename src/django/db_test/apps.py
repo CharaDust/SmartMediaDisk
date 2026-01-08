@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class Random32767Config(AppConfig):
+class DbTestConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'random32767'
+    name = 'db_test'

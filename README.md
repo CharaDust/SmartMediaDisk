@@ -99,7 +99,6 @@ python3 manage.py startapp 你的app名字
 ```shell
 python manage.py startapp 你的app名字
 ```
-或者复制该目录下的`empty`文件夹并直接粘贴，里面包含已创建好的app模版  
 #### 注册app
 打开以下文件
 ```Path
