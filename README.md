@@ -1,8 +1,7 @@
 # SmartMediaDisk
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
 这是一个本科毕业设计，由多位作者联合开发和维护。  
-一个部署在Docker内的媒体网盘服务器  
-[repo](doc/report-general.md)
+一个部署在Docker内的媒体网盘服务器。[（报告文字）](doc/report-general.md)
 ## 功能 / Feature
 - 暂定
 ## 需要注意 / Warn
