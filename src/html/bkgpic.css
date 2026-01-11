@@ -1,0 +1,29 @@
+body {
+    background-image: url('https://picsum.photos/1920/1080');/* 替换为您的背景图URL */
+    background-size: cover;
+    background-attachment: fixed;/* 固定背景，不随内容滚动 */
+    background-position: center;
+    min-height: 100vh;/* 确保背景覆盖整个视口高度 */
+    margin: 0;
+    padding: 0;
+    z-index: -2;
+    /* overflow-y: scroll;
+    overflow-x: hidden; */
+    /* scrollbar-gutter: stable both-edges; */
+}
+.background-section {
+            position: relative;
+            background-image: url('https://picsum.photos/1920/1080'); /* 替换为您的背景图URL */
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh; /* 确保背景覆盖整个视口高度 */
+            z-index: -2;
+}
+.overlay {
+    
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: -1;
+    /* 白色半透明遮罩 */
+}
