@@ -20,72 +20,6 @@
     <!-- 正文 -->
     <div class="overlay">
         <div class="container">
-            <!-- 状态栏 -->
-            <div class="status-bar navbar navbar-light">
-                <div class="container-fluid d-flex justify-content-between align-items-center py-2">
-                    <!-- 左侧：头像和用户名 -->
-                    <div class="d-flex align-items-center">
-                        <span style="width: 50px; height: 40px;">
-                            <img src="https://picsum.photos/40/40?random=1" alt="头像" class="avatar rounded-circle">
-                            <!-- 随机头像示例 -->
-                        </span>
-                        <span id="username">访客</span> <!-- 用户名将在这里显示 -->
-                    </div>
-                    <!-- 右侧：当前时间 -->
-                    <span id="current-time">加载中...</span> <!-- 时间将在这里显示 -->
-                </div>
-            </div>
-            <!-- 头部界面 -->
-            <div class="container">
-                <h2>Resume</h2>
-                <!-- 左右布局 -->
-                <div class="row">
-                    <div class="col-3">
-                        <div class="">
-                            <div class="card" style="width: 100%; margin-bottom: 10px;">
-                                <img src="..." class="card-img-top" alt="...">
-                                <div class="card-body">
-                                    <p class="card-text">继续"上一个内容"</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="">
-                            <div class="container text-center">
-                                <div class="row row-cols-2">
-                                    <div class="col">
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-dark" type="button">订阅</button>
-                                            <button class="btn btn-dark" type="button">库</button>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-dark" type="button">收藏</button>
-                                            <button class="btn btn-dark" type="button">关闭</button>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                    </div>
-                                    <div class="col">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-8">
-                        <div class="">
-                            <h3>最近任务</h3>
-                        </div>
-                        <div class="">
-                            <h3>推荐</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 资料库 -->
-            <div class="container">
-                <h2>资料库</h2>
-            </div>
             <header>
                 <h1>🚀 测试页面</h1>
             </header>
@@ -127,20 +61,6 @@
                 <p>但实际上并不行，这只是一个加了1.5秒延迟后显示的文本</p>
             `;
         }, 1500);
-
-        function updateTime() {
-            const now = new Date();
-            // const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const optionshhmm = { hour: '2-digit', minute: '2-digit' };
-            const formattedTime = now.toLocaleDateString('zh-CN', optionshhmm).replace(/\//g, '-');
-            document.getElementById('current-time').textContent = formattedTime;
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            // 设置初始时间
-            updateTime();
-            // 每秒更新一次时间
-            setInterval(updateTime, 1000);
-        });
     </script>
 
 
