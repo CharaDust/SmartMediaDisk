@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <title>表单测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <!--# include virtual="/innerHTML/nav.html" -->
+    <div class="container">
+        <h1>Sendmail Test</h1>
+        <form>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">主要收件人：</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                    placeholder="name@example.com">
+                <div class="mb-3"></div>
+                <label for="exampleInputEmail1" class="form-label">抄送：</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                    placeholder="name@example.com">
+                <div id="emailHelp" class="form-text">所有收件人将看到抄送名单，用分号分割收件人邮箱</div>
+                <div class="mb-3"></div>
+                <label for="exampleInputEmail1" class="form-label">密送：</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                    placeholder="name@example.com">
+                <div id="emailHelp" class="form-text">仅密送收件人能看到密送收件人自己</div>
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">文件：</label>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" type="button">在资料库中选择文件以添加 ></button>
+                    <table id="data-table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>序列</th>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>修改日期</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 数据将在这里动态插入 -->
+                            <tr>
+                                <td colspan="4" style="text-align:center;">还没有文件</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">问候语：</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</body>
+
+</html>

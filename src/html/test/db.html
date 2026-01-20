@@ -16,7 +16,7 @@
         <div class="controls">
             <button onclick="loadData()" class="btn btn-outline-primary">刷新数据</button>
             <button onclick="createItem() " class="btn btn-outline-primary">新增条目</button>
-            <button onclick="deleteAll() " class="btn btn-outline-primary">清空所有</button>
+            <button onclick="deleteAll() " class="btn btn-outline-danger">清空所有</button>
         </div>
         <div id="status"></div>
         <table id="data-table" class="table table-striped">
@@ -105,7 +105,7 @@
             }
         }
 
-        async function deleteAll() {
+        async function deleteAll() { // 确定要删除所有条目吗？此操作不可撤销。
             if (confirm("确定要删除所有条目吗？此操作不可撤销。")) {
                 updateStatus("正在删除所有条目...", false, false);
                 try {
