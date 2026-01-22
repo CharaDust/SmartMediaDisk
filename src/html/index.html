@@ -6,58 +6,178 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
-    <title>Bootstrap Example</title>
+    <link href="bkgpic.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <title>Media Cube</title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body class="p-3 m-0 border-0 bd-example">
+<body class="m-0 border-0 bd-example">
 
     <!-- 导航栏 -->
     <!--# include virtual="/innerHTML/nav.html" -->
 
     <!-- 正文 -->
-    <div class="container">
-        <header>
-            <h1>🚀 测试页面</h1>
-        </header>
-
-        <main>
-            <section>
-                <h2>系统信息</h2>
-                <ul>
-                    <li>部署环境：Ubuntu Linux</li>
-                    <li>容器技术：Docker</li>
-                    <li>Web服务器：Nginx</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>部署状态</h2>
-                <div id="status">
-                    <p class="loading">正在检测部署状态...</p>
+    <div class="overlay fixed-top"></div>
+    <div class="">
+        <div class="container">
+            <!-- 状态栏 -->
+            <div class="status-bar navbar navbar-light">
+                <div class="container-fluid d-flex justify-content-between align-items-center py-2">
+                    <!-- 左侧：头像和用户名 -->
+                    <div class="d-flex align-items-center">
+                        <span style="width: 50px; height: 40px;">
+                            <img src="https://picsum.photos/40/40?random=1" alt="头像" class="avatar rounded-circle">
+                            <!-- 随机头像示例 -->
+                        </span>
+                        <span id="username">访客</span> <!-- 用户名将在这里显示 -->
+                    </div>
+                    <!-- 右侧：当前时间 -->
+                    <span id="current-time">加载中...</span> <!-- 时间将在这里显示 -->
                 </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>部署时间：<span id="deploy-time"></span></p>
-        </footer>
+            </div>
+            <!-- 头部界面 -->
+            <div class="container">
+                <h2>Resume</h2>
+                <!-- 左右布局 -->
+                <div class="row">
+                    <div class="col">
+                        <!-- 上一个内容 -->
+                        <div class="">
+                            <div class="card" style="width: 100%; margin-bottom: 10px;">
+                                <img src="https://picsum.photos/1280/720" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <p class="card-text">继续"上一个内容"</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 按钮组 -->
+                        <div class="">
+                            <div class="container text-center">
+                                <div class="row row-cols-2">
+                                    <div class="col">
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-dark" type="button">详情</button>
+                                            <button class="btn btn-dark" type="button">库</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-dark" type="button">收藏</button>
+                                            <button class="btn btn-dark" type="button">终止</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                    </div>
+                                    <div class="col">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-9 d-sm-block">
+                        <!-- 最近任务 -->
+                        <div class="">
+                            <h3>最近任务</h3>
+                            <div class="container text-center">
+                                <div class="row">
+                                    <div class="col">
+                                        Column1
+                                    </div>
+                                    <div class="col">
+                                        Column2
+                                    </div>
+                                    <div class="col">
+                                        Column3
+                                    </div>
+                                    <div class="col">
+                                        Column4
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 推荐 -->
+                        <div class="">
+                            <h3>接下来</h3>
+                            <div class="container text-center">
+                                <div class="row">
+                                    <div class="col">
+                                        Column1
+                                    </div>
+                                    <div class="col">
+                                        Column2
+                                    </div>
+                                    <div class="col">
+                                        Column3
+                                    </div>
+                                    <div class="col">
+                                        Column4
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container m-4"></div>
+            <!-- 资料库 -->
+            <div class="container">
+                <h2>资料库</h2>
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col">
+                            Column1
+                        </div>
+                        <div class="col">
+                            Column2
+                        </div>
+                        <div class="col">
+                            Column3
+                        </div>
+                        <div class="col">
+                            Column4
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container m-4"></div>
+            <!-- 实用工具 -->
+            <div class="container">
+                <h2>实用工具</h2>
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col">
+                            Column1
+                        </div>
+                        <div class="col">
+                            Column2
+                        </div>
+                        <div class="col">
+                            Column3
+                        </div>
+                        <div class="col">
+                            Column4
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 显示部署时间
-        document.getElementById('deploy-time').textContent =
-            new Date().toLocaleString('zh-CN');
-
-        // 模拟状态检测
-        setTimeout(() => {
-            const statusDiv = document.getElementById('status');
-            statusDiv.innerHTML = `
-                <p class="success">✅ 部署成功！</p>
-                <p>服务运行正常，可通过公网IP访问？</p>
-                <p>但实际上并不行，这只是一个加了1.5秒延迟后显示的文本</p>
-            `;
-        }, 1500);
+        function updateTime() {
+            const now = new Date();
+            // const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const optionshhmm = { hour: '2-digit', minute: '2-digit' };
+            const formattedTime = now.toLocaleDateString('zh-CN', optionshhmm).replace(/\//g, '-');
+            document.getElementById('current-time').textContent = formattedTime;
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            // 设置初始时间
+            updateTime();
+            // 每秒更新一次时间
+            setInterval(updateTime, 1000);
+        });
     </script>
 
 

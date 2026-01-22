@@ -19,6 +19,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'helloworld',
+    'random32767',
+    'db_test',
 ]
 
 MIDDLEWARE = [

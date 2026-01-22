@@ -1,6 +1,7 @@
 # SmartMediaDisk
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
 这是一个本科毕业设计，由多位作者联合开发和维护。  
+一个部署在Docker内的媒体网盘服务器。[（报告文字）](doc/report-general.md)
 ## 功能 / Feature
 - 暂定
 ## 需要注意 / Warn
@@ -79,81 +80,13 @@ docker load -i /home/yourusername/smartmediadisk-images.tar
 /src/html
 ```
 ### 设计后端
-设计后端略显麻烦，需要自行编写或导入现有Django app，然后注册它，最后为它分配URL
-#### 创建app模版
-确保你的开发环境（非Docker环境）已安装`Python`、`pip`、`Django`及其所需依赖  
-在以下目录内打开终端
-```Path
-/src/django
-```
-运行如下命令创建app模版：
-- `Windows`命令
-```powershell
-py manage.py startapp 你的app名字
-```
-- `macOS`命令
-```zsh
-python3 manage.py startapp 你的app名字
-```
-- `Linux`命令
-```shell
-python manage.py startapp 你的app名字
-```
-或者复制该目录下的`empty`文件夹并直接粘贴，里面包含已创建好的app模版  
-#### 注册app
-打开以下文件
-```Path
-/sec/django/project/settings.py
-```
-在以下文段内添加你的app名字（文件夹名）
-```python
-INSTALLED_APPS = [
-'django.contrib.admin',
-'django.contrib.auth',
-'django.contrib.contenttypes',
-'django.contrib.sessions',
-'django.contrib.messages',
-'django.contrib.staticfiles',
-'你的app名字',
-]
-```
-#### 编写逻辑
-以下是一个简单的生成随机数的逻辑，将它加入`/sec/django/你的app名字/views.py`
-```python
-import random
-from django.http import JsonResponse
-
-# 函数名不必与app名相同
-def fun2random32767(request):
-"""
-生成并返回一个 0 到 32767 之间的随机整数。
-"""
-random_number = random.randint(0, 32767)
-return JsonResponse({'random_number': random_number})
-```
-- `random.randint(0, 32767)` 会生成一个包含边界值的随机整数。
-- `JsonResponse` 会将数据以 JSON 格式返回给客户端，方便前端处理。如果不需要 JSON，可以使用 `HttpResponse` 返回纯文本。
-#### 分配链接路由
-在`/sec/django/你的app名字`目录下创建一个新的文件`urls.py`，并编写以下内容：
-```python
-from django.urls import path
-from . import views
-
-urlpatterns = [
-# random32767是函数名称
-path('', views.random32767, name='你的APP名字'),
-]
-```
-随后打开主URL路由配置，即`/src/django/project/urls.py`文件，修改内容：
-```python
-urlpatterns = [
-path('admin/', admin.site.urls),
-path('', hello_world), # 根路由
-path('api/自定义链接/', include('你的app名字.urls')), # 自定义app
-# path('api/其他api/', include('your_api_app.urls')), # 如果你有其他API应用，取消注释并添加
-]
-```
-#### 参考手册
+设计后端略显麻烦，需要自行编写或导入现有Django app，然后注册它，最后为它分配URL  
+- [创建一个简单的 Django app](doc/example-djangoapp.md)
+- [实现一个简单的前后端交互]()
+### 创建数据库
+- [创建一个简单的 SQLite 数据库](doc/example-sqlite.md)
+- [实现一个简单的前后端数据交互]()
+### 参考手册
 如果你需要实现更多高级功能，请参照[Django 官方文档（中文）](https://docs.djangoproject.com/zh-hans/6.0/)
 
 ## 任务列表 / Todo

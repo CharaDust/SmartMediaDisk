@@ -11,5 +11,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_world), # 添加根路由
     path('api/random32767/', include('random32767.urls')), # 自定义app
+    path('api/dbtest/', include('db_test.urls')), # 注意这里加了前缀 'api/testdb/'
     # path('api/', include('your_api_app.urls')), # 如果你有API应用，取消注释并添加
 ]
