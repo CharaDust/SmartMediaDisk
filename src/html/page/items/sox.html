@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG颜色控制器</title>
+    <!-- 引入 Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .svg-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 500px;
+        }
+
+        #svgDisplay {
+            max-width: 200%;
+            height: 200%;
+            border: 1px solid #dee2e6;
+            background-color: #ccc;
+            transform: rotate(180deg) scale(400%);
+        }
+
+        .form-container {
+            padding-right: 20px;
+        }
+
+        .btn-group {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- 左侧表单 -->
+            <div class="col-md-8 form-container">
+                <h3>SVG 控制面板</h3>
+                <form id="controlForm">
+                    <!-- 标签页 -->
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="setmodel-tab" data-bs-toggle="tab"
+                                data-bs-target="#setmodel-tab-pane" type="button" role="tab"
+                                aria-controls="setmodel-tab-pane" aria-selected="true">版式</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="setbkg-tab" data-bs-toggle="tab"
+                                data-bs-target="#setbkg-tab-pane" type="button" role="tab"
+                                aria-controls="setbkg-tab-pane" aria-selected="false">底纹</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="setdeco-tab" data-bs-toggle="tab"
+                                data-bs-target="#setdeco-tab-pane" type="button" role="tab"
+                                aria-controls="setdeco-tab-pane" aria-selected="false">装饰</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                data-bs-target="#disabled-tab-pane" type="button" role="tab"
+                                aria-controls="disabled-tab-pane" aria-selected="false" disabled>文字</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="setmodel-tab-pane" role="tabpanel"
+                            aria-labelledby="setmodel-tab" tabindex="0">
+                            <div class="mb-3">
+                                <label for="sox_length" class="form-label">配置名：</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" id="item_name" class="form-control"
+                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                        placeholder="sox">
+                                    <span class="input-group-text" id="inputGroup-sizing-default">.json</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sox_length" class="form-label">sox长度：</label><span
+                                    id="disval_sox_length">60cm</span>
+                                <input type="range" class="form-control form-range" id="sox_length" min="25" max="120"
+                                    value="60">
+                            </div>
+                            <div class="mb-3">
+                                <label for="sox_model" class="form-label">版式：</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="sox_model_panty"
+                                        value="enable_model_panty">
+                                    <label class="form-check-label" for="sox_model_panty">Panty</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="sox_model_tabi"
+                                        value="enable_model_tabi">
+                                    <label class="form-check-label" for="sox_model_tabi">Tabi</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="sox_model_brokentest"
+                                        value="enable_model_brokentest">
+                                    <label class="form-check-label" for="sox_model_brokentest">All Broken(Test)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="setbkg-tab-pane" role="tabpanel" aria-labelledby="setbkg-tab"
+                            tabindex="0">
+                            <div class="container mb-3">
+                                <ul class="nav nav-tabs" id="setbkg-inner-tablist" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="setbkg-solid-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setbkg-solid-tab-pane" type="button" role="tab"
+                                            aria-controls="setbkg-solid-tab-pane" aria-selected="true">纯色底色</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="setbkg-stripe-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setbkg-stripe-tab-pane" type="button" role="tab"
+                                            aria-controls="setbkg-stripe-tab-pane" aria-selected="false">条纹</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="setbkg-grad-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setbkg-grad-tab-pane" type="button" role="tab"
+                                            aria-controls="setbkg-grad-tab-pane" aria-selected="false">渐变</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="setbkg-texture-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setbkg-texture-tab-pane" type="button" role="tab"
+                                            aria-controls="setbkg-texture-tab-pane" aria-selected="false">纹理</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="setbkg-inner-tabcontent">
+                                    <div class="tab-pane fade show active" id="setbkg-solid-tab-pane" role="tabpanel"
+                                        aria-labelledby="setbkg-solid-tab" tabindex="0">
+                                        <div class="mb-3">
+                                            <label for="color_single" class="form-label">纯色底色</label>
+                                            <input type="color" class="form-control" id="color_single" value="#ffffff">
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="setbkg-stripe-tab-pane" role="tabpanel"
+                                        aria-labelledby="setbkg-stripe-tab" tabindex="0">
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="bkg_strip_switch"
+                                                value="1">
+                                            <label class="form-check-label" for="bkg_strip_switch">使用条纹底纹</label>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="color_strip" class="form-label">条纹颜色</label>
+                                            <input type="color" class="form-control" id="color_strip" value="#000000">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="color_strip_width" class="form-label">条纹宽度</label>
+                                            <div class="input-group">
+                                                <input type="range" class="form-control form-range"
+                                                    id="color_strip_width" min="1" max="30" value="5" step="0.5">
+                                                <span id="disval_color_strip_width" class="input-group-text">5</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="setbkg-grad-tab-pane" role="tabpanel"
+                                        aria-labelledby="setbkg-grad-tab" tabindex="0">
+                                        <p class="text-muted small">渐变</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="setbkg-texture-tab-pane" role="tabpanel"
+                                        aria-labelledby="setbkg-texture-tab" tabindex="0">
+                                        <p class="text-muted small">纹理</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="setdeco-tab-pane" role="tabpanel" aria-labelledby="setdeco-tab"
+                            tabindex="0">
+                            <div class="container mb-3">
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="setdecotoe-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setdecotoe-tab-pane" type="button" role="tab"
+                                            aria-controls="setdecotoe-tab-pane" aria-selected="true">尖色块</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="setdecostript-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setdecostript-tab-pane" type="button" role="tab"
+                                            aria-controls="setdecostript-tab-pane" aria-selected="false">有限横向条纹</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="setdecostep-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setdecostep-tab-pane" type="button" role="tab"
+                                            aria-controls="setdecostep-tab-pane" aria-selected="false">脚印</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="setdecocustom-tab" data-bs-toggle="tab"
+                                            data-bs-target="#setdecocustom-tab-pane" type="button" role="tab"
+                                            aria-controls="setdecocustom-tab-pane" aria-selected="false">自由图形</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="setdecotoe-tab-pane" role="tabpanel"
+                                        aria-labelledby="setdecotoe-tab" tabindex="0">
+                                        <!-- 尖色块 -->
+                                        <div class="container">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="deco_toe_switch"
+                                                    value="enable_toe">
+                                                <label class="form-check-label" for="deco_toe_switch">使用装饰</label>
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">颜色</span>
+                                                <input type="color" id="deco_toe_color"
+                                                    class="form-control form-control-lg" value="#000000">
+                                            </div>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">高度</span>
+                                                <input type="range" id="deco_toe_height" class="form-control form-range"
+                                                    min="0" max="20" step="0.5" value="2">
+                                                <span id="disval_deco_toe_height" class="input-group-text">2.0cm</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="setdecostript-tab-pane" role="tabpanel"
+                                        aria-labelledby="setdecostript-tab" tabindex="0">
+                                        <!-- 有限横向条纹 -->
+                                        <div class="container">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="deco_strip_top_switch" value="enable_toe">
+                                                <label class="form-check-label" for="deco_strip_top_switch">使用装饰</label>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        颜色
+                                                    </div>
+                                                    <div class="col">
+                                                        偏移
+                                                    </div>
+                                                    <div class="col">
+                                                        宽度
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- 条纹1 -->
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-text">
+                                                    <input id="deco_strip_top_1_enable" class="form-check-input mt-0"
+                                                        type="checkbox" value=""
+                                                        aria-label="Checkbox for following text input" checked>
+                                                </div>
+                                                <input type="color" id="deco_strip_top_1_color"
+                                                    class="form-control form-control-sm"
+                                                    aria-label="Text input with checkbox" value="#000000">
+                                                <input type="range" id="deco_strip_top_1_offset"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="60" step="0.1"
+                                                    value="4">
+                                                <!-- <span class="input-group-text">/</span> -->
+                                                <input type="range" id="deco_strip_top_1_width"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="2" step="0.1"
+                                                    value="1">
+                                                <!-- <span class="input-group-text">cm</span> -->
+                                            </div>
+                                            <!-- 条纹2 -->
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-text">
+                                                    <input id="deco_strip_top_2_enable" class="form-check-input mt-0"
+                                                        type="checkbox" value=""
+                                                        aria-label="Checkbox for following text input" checked>
+                                                </div>
+                                                <input type="color" id="deco_strip_top_2_color"
+                                                    class="form-control form-control-sm"
+                                                    aria-label="Text input with checkbox" value="#000000">
+                                                <input type="range" id="deco_strip_top_2_offset"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="60" step="0.1"
+                                                    value="6">
+                                                <!-- <span class="input-group-text">/</span> -->
+                                                <input type="range" id="deco_strip_top_2_width"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="2" step="0.1"
+                                                    value="1">
+                                                <!-- <span class="input-group-text">cm</span> -->
+                                            </div>
+                                            <!-- 条纹3 -->
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-text">
+                                                    <input id="deco_strip_top_3_enable" class="form-check-input mt-0"
+                                                        type="checkbox" value=""
+                                                        aria-label="Checkbox for following text input" checked>
+                                                </div>
+                                                <input type="color" id="deco_strip_top_3_color"
+                                                    class="form-control form-control-sm"
+                                                    aria-label="Text input with checkbox" value="#000000">
+                                                <input type="range" id="deco_strip_top_3_offset"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="60" step="0.1"
+                                                    value="8">
+                                                <!-- <span class="input-group-text">/</span> -->
+                                                <input type="range" id="deco_strip_top_3_width"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="2" step="0.1"
+                                                    value="1">
+                                                <!-- <span class="input-group-text">cm</span> -->
+                                            </div>
+                                            <!-- 条纹4 -->
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-text">
+                                                    <input id="deco_strip_top_4_enable" class="form-check-input mt-0"
+                                                        type="checkbox" value=""
+                                                        aria-label="Checkbox for following text input">
+                                                </div>
+                                                <input type="color" id="deco_strip_top_4_color"
+                                                    class="form-control form-control-sm"
+                                                    aria-label="Text input with checkbox" value="#000000">
+                                                <input type="range" id="deco_strip_top_4_offset"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="60" step="0.1"
+                                                    value="10">
+                                                <!-- <span class="input-group-text">/</span> -->
+                                                <input type="range" id="deco_strip_top_4_width"
+                                                    class="form-control form-control-sm form-range"
+                                                    aria-label="Text input with checkbox" min="0" max="2" step="0.1"
+                                                    value="1">
+                                                <!-- <span class="input-group-text">cm</span> -->
+                                            </div>
+                                            <label for="" class="form-label">控制：</label>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="deco_strip_top_autocolor" value="enable_model_panty">
+                                                <label class="form-check-label"
+                                                    for="deco_strip_top_autocolor">统一颜色</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="deco_strip_top_autopos" value="enable_model_tabi">
+                                                <label class="form-check-label"
+                                                    for="deco_strip_top_autopos">整体位移</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="deco_strip_top_autoheight" value="enable_model_brokentest">
+                                                <label class="form-check-label"
+                                                    for="deco_strip_top_autowidth">统一宽度</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="setdecostep-tab-pane" role="tabpanel"
+                                        aria-labelledby="setdecostep-tab" tabindex="0">
+                                        <div class="container">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="deco_step_switch" value="1">
+                                                <label class="form-check-label" for="deco_step_switch">使用装饰</label>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="deco_step_select" class="form-label">脚印</label>
+                                                <select class="form-select" id="deco_step_select">
+                                                    <option value="step_paw.svg">step_paw.svg</option>
+                                                    <option value="step_cross.svg">step_cross.svg</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="deco_step_color" class="form-label">脚印颜色</label>
+                                                <input type="color" class="form-control" id="deco_step_color" value="#ffc0cb">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="deco_step_scale" class="form-label">缩放</label>
+                                                <div class="input-group">
+                                                    <input type="range" class="form-control form-range" id="deco_step_scale"
+                                                        min="0.1" max="1.2" step="0.1" value="1">
+                                                    <span id="disval_deco_step_scale" class="input-group-text">0.6</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="deco_step_offset_y" class="form-label">纵向偏移</label>
+                                                <div class="input-group">
+                                                    <input type="range" class="form-control form-range" id="deco_step_offset_y"
+                                                        min="3" max="20" step="0.1" value="7">
+                                                    <span id="disval_deco_step_offset_y" class="input-group-text">7</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="setdecocustom-tab-pane" role="tabpanel"
+                                        aria-labelledby="setdecocustom-tab" tabindex="0">
+                                        <!-- 自由图形 -->
+                                        <div class="container">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="deco_custom_switch" value="1">
+                                                <label class="form-check-label" for="deco_custom_switch">使用装饰</label>
+                                            </div>
+                                            <div class="btn-group mb-3" role="group">
+                                                <button type="button" class="btn btn-outline-primary" id="deco_custom_add_btn">新增图形</button>
+                                                <button type="button" class="btn btn-outline-secondary" id="deco_custom_clear_btn">清空图形</button>
+                                                <button type="button" class="btn btn-outline-primary" id="deco_custom_update_btn">更新图形</button>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:4em">序号</th>
+                                                            <th>svg元素（输入框，用于编写自定义svg元素）</th>
+                                                            <th style="width:12em">操作</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="deco_custom_tbody">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
+                            tabindex="0">...</div>
+                    </div>
+                    <!-- 按钮 -->
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary" id="saveBtn">保存配置</button>
+                        <button type="button" class="btn btn-primary" id="loadBtn">加载配置</button>
+                        <button type="button" class="btn btn-primary" id="resetBtn">重置</button>
+                        <button type="button" class="btn btn-primary" id="saveSvgBtn">保存SVG</button>
+                    </div>
+                </form>
+
+                <div class="mt-3">
+                    <h5>配置文件操作</h5>
+                    <input type="file" class="form-control" id="fileInput" accept=".json">
+                </div>
+            </div>
+
+            <!-- 右侧SVG显示 -->
+            <div class="col-md-4">
+                <h3></h3>
+                <div class="svg-container">
+                    <svg id="svgDisplay" width="50" height="150" xmlns="http://www.w3.org/2000/svg"
+                        transform="rotate(180)">
+                        <defs>
+                            <!-- stok遮罩形状 -->
+                            <mask height="50" width="100" y="0" x="0" id="stok">
+                                <!-- 透明基底 -->
+                                <rect id="trans" class="maskS" fill="black" height="80" width="100" y="0" x="0" />
+                                <!-- 左后stok -->
+                                <rect id="rectBL" class="maskB" fill="white" height="60" width="8" y="4" x="10" />
+                                <circle id="cirBL" class="maskS" fill="white" r="4" cy="4" cx="14" />
+                                <!-- 右后stok -->
+                                <rect id="rectBR" class="maskB" fill="white" height="60" width="8" y="4" x="0" />
+                                <circle id="cirBR" class="maskS" fill="white" r="4" cy="4" cx="4" />
+                                <!-- 右前stok -->
+                                <rect id="rectFR" class="maskB" fill="white" height="60" width="8" y="4" x="40" />
+                                <circle id="cirFR" class="maskS" fill="white" r="4" cy="4" cx="44" />
+                                <!-- 左前stok -->
+                                <rect id="rectFL" class="maskB" fill="white" height="60" width="8" y="4" x="30" />
+                                <circle id="cirFL" class="maskS" fill="white" r="4" cy="4" cx="34" />
+                                <!-- 前panty -->
+                                <rect id="ptcloF" class="maskP" fill="white" height="20" width="18" y="64" x="30"
+                                    visibility="hidden" />
+                                <!-- 后panty -->
+                                <rect id="ptcloB" class="maskP" fill="white" height="20" width="18" y="64" x="0"
+                                    visibility="hidden" />
+                                <!-- 前tabi -->
+                                <rect id="tabiFL" class="maskT" fill="black" height="3" width="0.4" y="0" x="33.8"
+                                    visibility="hidden" />
+                                <rect id="tabiFR" class="maskT" fill="black" height="3" width="0.4" y="0" x="43.8"
+                                    visibility="hidden" />
+                                <!-- 后tabi -->
+                                <rect id="tabiBL" class="maskT" fill="black" height="3" width="0.4" y="0" x="3.8"
+                                    visibility="hidden" />
+                                <rect id="tabiBR" class="maskT" fill="black" height="3" width="0.4" y="0" x="13.8"
+                                    visibility="hidden" />
+                                <!-- 破损 -->
+                                <circle id="maskBrokenHoleB0" class="maskX broken" fill="black" r="1.5" cy="038" cx="07"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB1" class="maskX broken" fill="black" r="1.7" cy="008" cx="09"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB2" class="maskX broken" fill="black" r="2.1" cy="072" cx="13"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB3" class="maskX broken" fill="black" r="0.2" cy="071" cx="11"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB4" class="maskX broken" fill="black" r="1.2" cy="009" cx="03"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB5" class="maskX broken" fill="black" r="2.4" cy="029" cx="16"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB6" class="maskX broken" fill="black" r="2.0" cy="015" cx="02"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB7" class="maskX broken" fill="black" r="1.9" cy="042" cx="04"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB8" class="maskX broken" fill="black" r="1.4" cy="096" cx="00"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleB9" class="maskX broken" fill="black" r="0.7" cy="081" cx="19"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleBA" class="maskX broken" fill="black" r="1.3" cy="033" cx="02"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleBB" class="maskX broken" fill="black" r="2.6" cy="087" cx="14"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleBC" class="maskX broken" fill="black" r="1.8" cy="053" cx="05"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleBD" class="maskX broken" fill="black" r="0.9" cy="045" cx="16"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleBE" class="maskX broken" fill="black" r="1.9" cy="006" cx="11"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleBF" class="maskX broken" fill="black" r="0.3" cy="094" cx="03"
+                                    visibility="hidden" />
+
+                                <circle id="maskBrokenHoleF0" class="maskX broken" fill="black" r="1.5" cy="038" cx="33"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF1" class="maskX broken" fill="black" r="1.7" cy="008" cx="45"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF2" class="maskX broken" fill="black" r="2.1" cy="072" cx="43"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF3" class="maskX broken" fill="black" r="0.2" cy="071" cx="44"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF4" class="maskX broken" fill="black" r="1.2" cy="009" cx="34"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF5" class="maskX broken" fill="black" r="2.4" cy="029" cx="46"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF6" class="maskX broken" fill="black" r="2.0" cy="015" cx="36"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF7" class="maskX broken" fill="black" r="1.9" cy="042" cx="30"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF8" class="maskX broken" fill="black" r="1.4" cy="096" cx="49"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleF9" class="maskX broken" fill="black" r="0.7" cy="081" cx="43"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleFA" class="maskX broken" fill="black" r="1.3" cy="033" cx="30"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleFB" class="maskX broken" fill="black" r="2.6" cy="087" cx="45"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleFC" class="maskX broken" fill="black" r="1.8" cy="053" cx="31"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleFD" class="maskX broken" fill="black" r="0.9" cy="045" cx="47"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleFE" class="maskX broken" fill="black" r="1.9" cy="006" cx="41"
+                                    visibility="hidden" />
+                                <circle id="maskBrokenHoleFF" class="maskX broken" fill="black" r="0.3" cy="094" cx="46"
+                                    visibility="hidden" />
+                                <!-- 复制标记 -->
+                                <path id="copy" fill="black" stroke="null" visibility="hidden"
+                                    d="m2,2.5a0.5,0.5 0 0 1 0.5,-0.5l2,0a0.5,0.5 0 0 1 0.5,0.5l0,0.5l0.5,0a0.5,0.5 0 0 1 0.5,0.5l0,2a0.5,0.5 0 0 1 -0.5,0.5l-2,0a0.5,0.5 0 0 1 -0.5,-0.5l0,-0.5l-0.5,0a0.5,0.5 0 0 1 -0.5,-0.5l0,-2zm0.5,-0.25a0.25,0.25 0 0 0 -0.25,0.25l0,2a0.25,0.25 0 0 0 0.25,0.25l2,0a0.25,0.25 0 0 0 0.25,-0.25l0,-2a0.25,0.25 0 0 0 -0.25,-0.25l-2,0z" />
+                            </mask>
+                        </defs>
+                        <!-- 本体 -->
+                        <g>
+                            <title>底色</title>
+                            <!-- 纯色底色 -->
+                            <!-- fill   : @base_color -->
+                            <rect id="bkgSingleColor" class="sox bkg single" mask="url(#stok)" fill="white" height="150"
+                                width="100" y="0" x="0" visibility="visible" />
+                            <!-- 渐变 -->
+                            <rect id="bkgGradColor" class="sox bkg grad" mask="url(#stok)" fill="white" height="150"
+                                width="100" y="0" x="0" visibility="hidden" />
+                            <!-- 柏林纹理 -->
+                            <image id="bkgBerinColor" class="sox bkg berin" mask="url(#stok)"
+                                href="berin-mpr34fkyas.png" height="150" width="150" visibility="hidden" />
+                            <!-- 底纹条纹容器：实时生成 rect，class="sox bkg stripC" -->
+                            <g id="bkgStripContainer"></g>
+
+                        </g>
+                        <g>
+                            <title>纹理</title>
+                            <!-- 根辅助线 -->
+                            <rect id="auxLineRoot" class="aux" mask="url(#stok)" fill="#FF00FF" height="0.1" width="100"
+                                y="20" x="0" visibility="hidden" />
+                            <!-- 顶部条纹 -->
+                            <rect id="stripT1" class="sox stripT" mask="url(#stok)" fill="black" height="2" width="100"
+                                y="60" x="0" visibility="visible" />
+                            <rect id="stripT2" class="sox stripT" mask="url(#stok)" fill="black" height="1" width="100"
+                                y="58" x="0" visibility="visible" />
+                            <rect id="stripT3" class="sox stripT" mask="url(#stok)" fill="black" height="1" width="100"
+                                y="56" x="0" visibility="visible" />
+                            <rect id="stripT4" class="sox stripT" mask="url(#stok)" fill="black" height="1" width="100"
+                                y="54" x="0" visibility="hidden" />
+                            <!-- 尖 -->
+                            <rect id="toe" class="sox stripT" mask="url(#stok)" fill="black" height="3" width="100"
+                                y="0" x="0" visibility="hidden" />
+                        </g>
+                        <g>
+                            <title>图案</title>
+                            <!-- 脚印 -->
+                            <g id="stepContainer"></g>
+                            <!-- V -->
+                            <text class="text-VB" x="-4" y="-20" font-family="Gill Sans" font-size="10" fill="black"
+                                text-anchor="middle" transform="rotate(180)" visibility="hidden">
+                                V
+                            </text>
+                            <text class="text-VB" x="-14" y="-20" font-family="Gill Sans" font-size="10" fill="black"
+                                text-anchor="middle" transform="rotate(180)" visibility="hidden">
+                                V
+                            </text>
+                        </g>
+                        <g>
+                            <title>文字</title>
+                            <!-- 文字 - 前对角LR -->
+                            <text class="text-lrF" mask="url(#stok)" x="37" y="6" font-family="Georgia, serif"
+                                font-size="2" fill="black" text-anchor="middle" visibility="hidden">
+                                L
+                            </text>
+                            <text class="text-lrF" mask="url(#stok)" x="41" y="6" font-family="Georgia, serif"
+                                font-size="2" fill="black" text-anchor="middle" visibility="hidden">
+                                R
+                            </text>
+                            <!-- 文字 - 底LR -->
+                            <text class="text-lrlB" mask="url(#stok)" x="14" y="12" font-family="Georgia, serif"
+                                font-size="10" fill="black" text-anchor="middle" visibility="hidden">
+                                L
+                            </text>
+                            <text class="text-lrlB" mask="url(#stok)" x="4" y="12" font-family="Georgia, serif"
+                                font-size="10" fill="black" text-anchor="middle" visibility="hidden">
+                                R
+                            </text>
+                            <!-- 文字 - 前尖 -->
+                            <text class="text-toeF" mask="url(#stok)" x="34" y="6" font-family="Georgia, serif"
+                                font-size="2" fill="black" text-anchor="middle" visibility="hidden">
+                                TEXT-L
+                            </text>
+                            <text class="text-toeF" mask="url(#stok)" x="44" y="6" font-family="Georgia, serif"
+                                font-size="2" fill="black" text-anchor="middle" visibility="hidden">
+                                TEXT-R
+                            </text>
+                            <!-- 文字 - 后竖写 -->
+                            <text class="text-eliteB" x="-20" y="15.5" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-L
+                            </text>
+                            <text class="text-eliteB" x="-20" y="5.5" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-R
+                            </text>
+                            <!-- 文字 - 内竖写 -->
+                            <text class="text-eliteI-del" x="-20" y="12" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-IBL
+                            </text>
+                            <text class="text-eliteI" x="-20" y="39" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-IL
+                            </text>
+                            <text class="text-eliteI" x="-20" y="9" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-IR
+                            </text>
+                            <text class="text-eliteI-del" x="-20" y="42" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-IFR
+                            </text>
+                            <!-- 文字 - 外竖写 -->
+                            <text class="text-eliteO" x="-20" y="19" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-OL
+                            </text>
+                            <text class="text-eliteO" x="-20" y="49" font-family="Georgia, serif" font-size="4"
+                                fill="black" text-anchor="end" transform="rotate(-90)" visibility="hidden">
+                                TEXT-OR
+                            </text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const item_name = document.getElementById('item_name'); // 配置名
+        const sox_length = document.getElementById('sox_length'); // sox长度
+        const disval_sox_length = document.getElementById('disval_sox_length'); // DISsox长度
+        const svgval_sox_length = document.getElementsByClassName('maskB'); // SVGsox长度
+        const sox_model_panty = document.getElementById('sox_model_panty'); // panty
+        const svgval_sox_model_panty = document.getElementsByClassName('maskP'); // SVGpanty 
+        const sox_model_tabi = document.getElementById('sox_model_tabi'); // tabi
+        const svgval_sox_model_tabi = document.getElementsByClassName('maskT'); // SVGtabi
+        const color_single = document.getElementById('color_single'); // 纯色底色
+        const svgval_color_single = document.getElementById('bkgSingleColor'); // SVG纯色底色
+
+        // 底纹条纹（实时生成，class="sox bkg stripC"）
+        const bkg_strip_switch = document.getElementById('bkg_strip_switch');
+        const color_strip = document.getElementById('color_strip');
+        const color_strip_width = document.getElementById('color_strip_width');
+        const disval_color_strip_width = document.getElementById('disval_color_strip_width');
+        const bkgStripContainer = document.getElementById('bkgStripContainer');
+        const SVG_VIEW_HEIGHT = 150; // 与底色 rect 一致
+
+        // 尖色块
+        const deco_toe_switch = document.getElementById('deco_toe_switch');
+        const deco_toe_color = document.getElementById('deco_toe_color');
+        const deco_toe_height = document.getElementById('deco_toe_height');
+        const disval_deco_toe_height = document.getElementById('disval_deco_toe_height');
+        const svgval_toe = document.getElementById('toe'); // SVG 尖色块 rect
+
+        // 顶部条纹
+        const svgval_strip_top_1 = document.getElementById('stripT1'); // SVG顶部条纹1
+        const svgval_strip_top_2 = document.getElementById('stripT2'); // SVG顶部条纹2
+        const svgval_strip_top_3 = document.getElementById('stripT3'); // SVG顶部条纹3
+        const svgval_strip_top_4 = document.getElementById('stripT4'); // SVG顶部条纹4
+        const deco_strip_top_switch = document.getElementById('deco_strip_top_switch'); // 顶部条纹条纹总开关
+        const deco_strip_top_1_enable = document.getElementById('deco_strip_top_1_enable'); // 顶部条纹1开关
+        const deco_strip_top_2_enable = document.getElementById('deco_strip_top_2_enable'); // 顶部条纹2开关
+        const deco_strip_top_3_enable = document.getElementById('deco_strip_top_3_enable'); // 顶部条纹3开关
+        const deco_strip_top_4_enable = document.getElementById('deco_strip_top_4_enable'); // 顶部条纹4开关
+        const deco_strip_top_1_color = document.getElementById('deco_strip_top_1_color'); // 顶部条纹1颜色
+        const deco_strip_top_2_color = document.getElementById('deco_strip_top_2_color'); // 顶部条纹2颜色
+        const deco_strip_top_3_color = document.getElementById('deco_strip_top_3_color'); // 顶部条纹3颜色
+        const deco_strip_top_4_color = document.getElementById('deco_strip_top_4_color'); // 顶部条纹4颜色
+        const deco_strip_top_1_offset = document.getElementById('deco_strip_top_1_offset'); // 顶部条纹1偏移
+        const deco_strip_top_2_offset = document.getElementById('deco_strip_top_2_offset'); // 顶部条纹2偏移
+        const deco_strip_top_3_offset = document.getElementById('deco_strip_top_3_offset'); // 顶部条纹3偏移
+        const deco_strip_top_4_offset = document.getElementById('deco_strip_top_4_offset'); // 顶部条纹4偏移
+        const deco_strip_top_1_width = document.getElementById('deco_strip_top_1_width'); // 顶部条纹1宽度
+        const deco_strip_top_2_width = document.getElementById('deco_strip_top_2_width'); // 顶部条纹2宽度 
+        const deco_strip_top_3_width = document.getElementById('deco_strip_top_3_width'); // 顶部条纹3宽度
+        const deco_strip_top_4_width = document.getElementById('deco_strip_top_4_width'); // 顶部条纹4宽度
+        const deco_strip_top_autocolor = document.getElementById('deco_strip_top_autocolor'); // 统一颜色
+        const deco_strip_top_autopos = document.getElementById('deco_strip_top_autopos'); // 整体位移
+        const deco_strip_top_autoheight = document.getElementById('deco_strip_top_autoheight'); // 统一宽度
+        // 整体位移开启时，2/3/4 条纹相对条纹1的偏移差（在开启时捕获）
+        let strip_top_offset_rel_2, strip_top_offset_rel_3, strip_top_offset_rel_4;
+
+        // 脚印
+        const deco_step_switch = document.getElementById('deco_step_switch');
+        const deco_step_select = document.getElementById('deco_step_select');
+        const deco_step_color = document.getElementById('deco_step_color');
+        const deco_step_scale = document.getElementById('deco_step_scale');
+        const deco_step_offset_y = document.getElementById('deco_step_offset_y');
+        const disval_deco_step_scale = document.getElementById('disval_deco_step_scale');
+        const disval_deco_step_offset_y = document.getElementById('disval_deco_step_offset_y');
+        const stepContainer = document.getElementById('stepContainer'); // 脚印内联 SVG 容器
+        const SVG_VIEW_WIDTH = 100;
+
+        // 自由图形
+        const deco_custom_switch = document.getElementById('deco_custom_switch');
+        const deco_custom_add_btn = document.getElementById('deco_custom_add_btn');
+        const deco_custom_clear_btn = document.getElementById('deco_custom_clear_btn');
+        const deco_custom_update_btn = document.getElementById('deco_custom_update_btn');
+        const deco_custom_tbody = document.getElementById('deco_custom_tbody');
+
+        // 文件按钮
+        const saveBtn = document.getElementById('saveBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const fileInput = document.getElementById('fileInput');
+        const controlForm = document.getElementById('controlForm');
+
+
+        /********************************
+            初始化
+        ********************************/
+        update_sox_length(); // sox长度
+        update_sox_model_panty(); // panty
+        update_sox_model_tabi(); // tabi
+        update_color_single(); // 纯色底色
+        update_strip_top_visibility(); // 顶部条纹显隐
+        update_strip_top_color(); // 顶部条纹颜色
+        update_strip_top_width_and_offset(); // 顶部条纹宽度和偏移
+        apply_strip_top_autocolor(); // 顶部条纹统一颜色
+        apply_strip_top_autopos(); // 整体位移
+        apply_strip_top_autoheight(); // 统一宽度
+        update_toe(); // 尖色块
+        update_bkg_strip(); // 底纹条纹
+        update_deco_step(); // 脚印：内联 SVG 并应用颜色/缩放/偏移
+        /********************************
+            监听
+        ********************************/
+        // 监听sox长度
+        sox_length.addEventListener('input', function () {
+            update_sox_length();
+        });
+        // 监听panty
+        sox_model_panty.addEventListener('input', function () {
+            update_sox_model_panty();
+        })
+        // 监听tabi
+        sox_model_tabi.addEventListener('input', function () {
+            update_sox_model_tabi();
+        })
+        // 监听纯色底色
+        color_single.addEventListener('input', function () {
+            update_color_single();
+        });
+        // 监听底纹条纹
+        bkg_strip_switch.addEventListener('change', update_bkg_strip);
+        color_strip.addEventListener('input', update_bkg_strip);
+        color_strip_width.addEventListener('input', update_bkg_strip);
+        // 监听尖色块
+        deco_toe_switch.addEventListener('change', update_toe);
+        deco_toe_color.addEventListener('input', update_toe);
+        deco_toe_height.addEventListener('input', update_toe);
+        // 监听条纹总开关与各条纹
+        deco_strip_top_switch.addEventListener('change', update_strip_top_visibility);
+        deco_strip_top_1_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹1
+        deco_strip_top_2_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹2
+        deco_strip_top_3_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹3
+        deco_strip_top_4_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹4
+        // 监听条纹颜色（统一颜色开启时，仅条纹1可调，2/3/4 与条纹1同步）
+        deco_strip_top_1_color.addEventListener('input', function () {
+            apply_strip_top_autocolor();
+            update_strip_top_color();
+        });
+        deco_strip_top_2_color.addEventListener('input', update_strip_top_color);
+        deco_strip_top_3_color.addEventListener('input', update_strip_top_color);
+        deco_strip_top_4_color.addEventListener('input', update_strip_top_color);
+        deco_strip_top_autocolor.addEventListener('change', function () {
+            apply_strip_top_autocolor();
+            update_strip_top_color();
+        });
+        // 监听条纹宽度与偏移（整体位移开启时，仅条纹1可调偏移，2/3/4 相对条纹1锁定）
+        deco_strip_top_1_offset.addEventListener('input', function () {
+            apply_strip_top_autopos();
+            update_strip_offset_range();
+            update_strip_top_width_and_offset();
+        });
+        deco_strip_top_1_width.addEventListener('input', function () {
+            apply_strip_top_autoheight();
+            update_strip_top_width_and_offset();
+        });
+        deco_strip_top_2_offset.addEventListener('input', update_strip_top_width_and_offset);
+        deco_strip_top_2_width.addEventListener('input', update_strip_top_width_and_offset);
+        deco_strip_top_3_offset.addEventListener('input', update_strip_top_width_and_offset);
+        deco_strip_top_3_width.addEventListener('input', update_strip_top_width_and_offset);
+        deco_strip_top_4_offset.addEventListener('input', update_strip_top_width_and_offset);
+        deco_strip_top_4_width.addEventListener('input', update_strip_top_width_and_offset);
+        deco_strip_top_autopos.addEventListener('change', function () {
+            apply_strip_top_autopos();
+            update_strip_offset_range();
+            update_strip_top_width_and_offset();
+        });
+        deco_strip_top_autoheight.addEventListener('change', function () {
+            apply_strip_top_autoheight();
+            update_strip_top_width_and_offset();
+        });
+        // 监听脚印：缩放、纵向偏移、开关、下拉、颜色
+        deco_step_offset_y.addEventListener('input', function () {
+            if (disval_deco_step_offset_y) disval_deco_step_offset_y.textContent = Number(deco_step_offset_y.value).toFixed(1);
+            update_deco_step();
+        });
+        deco_step_switch.addEventListener('change', update_deco_step);
+        deco_step_select.addEventListener('change', update_deco_step);
+        deco_step_color.addEventListener('input', update_deco_step);
+        deco_step_scale.addEventListener('input', function () {
+            if (disval_deco_step_scale) disval_deco_step_scale.textContent = Number(deco_step_scale.value).toFixed(1);
+            update_deco_step();
+        });
+
+        // 自由图形：动态表格
+        function refreshDecoCustomRowNumbers() {
+            const rows = deco_custom_tbody ? deco_custom_tbody.querySelectorAll('tr') : [];
+            rows.forEach((tr, i) => {
+                const idxCell = tr.querySelector('.deco_custom_index');
+                if (idxCell) idxCell.textContent = i + 1;
+                const btnUp = tr.querySelector('.deco_custom_btn_up');
+                const btnDown = tr.querySelector('.deco_custom_btn_down');
+                if (btnUp) btnUp.style.display = i === 0 ? 'none' : '';
+                if (btnDown) btnDown.style.display = i === rows.length - 1 ? 'none' : '';
+            });
+        }
+        function addDecoCustomRow() {
+            if (!deco_custom_tbody) return;
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td class="deco_custom_index"></td>' +
+                '<td><input type="text" class="form-control form-control-sm deco_custom_svg_input" placeholder="如 &lt;circle r=\'5\' cx=\'10\' cy=\'10\'/&gt;"></td>' +
+                '<td><div class="btn-group btn-group-sm"><button type="button" class="btn btn-outline-danger deco_custom_btn_del">删除</button>' +
+                '<button type="button" class="btn btn-outline-secondary deco_custom_btn_up">上移</button>' +
+                '<button type="button" class="btn btn-outline-secondary deco_custom_btn_down">下移</button></div></td>';
+            deco_custom_tbody.appendChild(tr);
+            refreshDecoCustomRowNumbers();
+        }
+        if (deco_custom_add_btn) {
+            deco_custom_add_btn.addEventListener('click', addDecoCustomRow);
+        }
+        if (deco_custom_clear_btn) {
+            deco_custom_clear_btn.addEventListener('click', function () {
+                if (deco_custom_tbody) deco_custom_tbody.innerHTML = '';
+            });
+        }
+        if (deco_custom_update_btn) {
+            deco_custom_update_btn.addEventListener('click', function () {
+                // 更新图形：可在此处根据表格内容刷新 SVG 显示
+            });
+        }
+        if (deco_custom_tbody) {
+            deco_custom_tbody.addEventListener('click', function (e) {
+                const tr = e.target.closest('tr');
+                if (!tr || tr.parentElement !== deco_custom_tbody) return;
+                const rows = Array.from(deco_custom_tbody.querySelectorAll('tr'));
+                const i = rows.indexOf(tr);
+                if (e.target.classList.contains('deco_custom_btn_del')) {
+                    tr.remove();
+                    refreshDecoCustomRowNumbers();
+                } else if (e.target.classList.contains('deco_custom_btn_up') && i > 0) {
+                    deco_custom_tbody.insertBefore(tr, rows[i - 1]);
+                    refreshDecoCustomRowNumbers();
+                } else if (e.target.classList.contains('deco_custom_btn_down') && i < rows.length - 1) {
+                    const next = rows[i + 1];
+                    deco_custom_tbody.insertBefore(next, tr);
+                    refreshDecoCustomRowNumbers();
+                }
+            });
+        }
+
+        /********************************
+            更新
+        ********************************/
+        // 更新配置名
+        function update_item_name() { }
+        // 更新sox长度
+        function update_sox_length() {
+            update_strip_offset_range();
+            const tmpval_sox_length = sox_length.value - 4;
+            disval_sox_length.textContent = sox_length.value + "cm";
+            if (svgval_sox_length) {
+                for (let i = 0; i < svgval_sox_length.length; i++) {
+                    svgval_sox_length[i].setAttribute('height', tmpval_sox_length);
+                }
+                for (let i = 0; i < svgval_sox_model_panty.length; i++) {
+                    svgval_sox_model_panty[i].setAttribute('y', tmpval_sox_length + 4);
+                }
+                update_strip_top_width_and_offset();
+                update_bkg_strip();
+            }
+        }
+        // 更新panty
+        function update_sox_model_panty() {
+            const tmpval_sox_model_panty = sox_model_panty.checked;
+            for (let i = 0; i < svgval_sox_model_panty.length; i++) {
+                if (tmpval_sox_model_panty) {
+                    svgval_sox_model_panty[i].setAttribute('visibility', "visible");
+                    sox_length.setAttribute('min', 45);
+                    if (sox_length.value <= 45) {
+                        sox_length.value = 45;
+                        update_sox_length();
+                    } else {
+                        update_strip_offset_range();
+                    }
+                }
+                else {
+                    svgval_sox_model_panty[i].setAttribute('visibility', "hidden");
+                    sox_length.setAttribute('min', 25);
+                    update_strip_offset_range();
+                }
+            }
+        }
+        // 更新tabi
+        function update_sox_model_tabi() {
+            const tmpval_sox_model_tabi = sox_model_tabi.checked;
+            for (let i = 0; i < svgval_sox_model_tabi.length; i++) {
+                if (tmpval_sox_model_tabi) { svgval_sox_model_tabi[i].setAttribute('visibility', "visible"); }
+                else { svgval_sox_model_tabi[i].setAttribute('visibility', "hidden"); }
+            }
+        }
+        // 更新纯色底色
+        function update_color_single() {
+            const tmpval_color_single = color_single.value;
+            if (svgval_color_single) {
+                svgval_color_single.setAttribute('fill', tmpval_color_single);
+            }
+        }
+        // 底纹条纹：根据总开关、颜色、宽度实时生成 rect（y=0,2w,4w,... height=w, class="sox bkg stripC"）
+        function update_bkg_strip() {
+            if (!bkgStripContainer) return;
+            while (bkgStripContainer.firstChild) bkgStripContainer.removeChild(bkgStripContainer.firstChild);
+            const w = parseFloat(color_strip_width && color_strip_width.value) || 5;
+            if (disval_color_strip_width) disval_color_strip_width.textContent = Number(w).toFixed(1);
+            if (!bkg_strip_switch || !bkg_strip_switch.checked) return;
+            const fillColor = color_strip && color_strip.value ? color_strip.value : '#000000';
+            for (let y = 0; y + w <= sox_length.value; y += w * 2) {
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', 0);
+                rect.setAttribute('y', y);
+                rect.setAttribute('width', 100);
+                rect.setAttribute('height', w);
+                rect.setAttribute('fill', fillColor);
+                rect.setAttribute('mask', 'url(#stok)');
+                rect.setAttribute('class', 'sox bkg stripC');
+                bkgStripContainer.appendChild(rect);
+            }
+        }
+        // 更新尖色块：使用装饰控制显隐，颜色→fill，高度→rect height，并更新“高度”显示
+        function update_toe() {
+            if (!svgval_toe) return;
+            svgval_toe.setAttribute('visibility', deco_toe_switch && deco_toe_switch.checked ? 'visible' : 'hidden');
+            svgval_toe.setAttribute('fill', deco_toe_color ? deco_toe_color.value : '#ffffff');
+            const h = parseFloat(deco_toe_height && deco_toe_height.value) || 0;
+            svgval_toe.setAttribute('height', h);
+            if (disval_deco_toe_height) disval_deco_toe_height.textContent = Number(h).toFixed(1) + 'cm';
+        }
+        // 更新顶部条纹开关（总开关打开时，各条纹按自身 checkbox 显隐；总开关关闭时全部隐藏）
+        function update_strip_top_visibility() {
+            const masterOn = deco_strip_top_switch && deco_strip_top_switch.checked;
+            const pairs = [
+                [deco_strip_top_1_enable, svgval_strip_top_1],
+                [deco_strip_top_2_enable, svgval_strip_top_2],
+                [deco_strip_top_3_enable, svgval_strip_top_3],
+                [deco_strip_top_4_enable, svgval_strip_top_4]
+            ];
+            pairs.forEach(function (p) {
+                const checkbox = p[0], rect = p[1];
+                if (rect) rect.setAttribute('visibility', (masterOn && checkbox.checked) ? 'visible' : 'hidden');
+            });
+        }
+        // 整体位移：开启时只允许调条纹1偏移，2/3/4 与条纹1保持相对位置
+        function apply_strip_top_autopos() {
+            const on = deco_strip_top_autopos && deco_strip_top_autopos.checked;
+            deco_strip_top_2_offset.disabled = on;
+            deco_strip_top_3_offset.disabled = on;
+            deco_strip_top_4_offset.disabled = on;
+            if (on) {
+                const o1 = parseFloat(deco_strip_top_1_offset.value) || 0;
+                // 首次开启或尚未有相对差时，从当前值捕获
+                if (strip_top_offset_rel_2 === undefined) {
+                    strip_top_offset_rel_2 = (parseFloat(deco_strip_top_2_offset.value) || 0) - o1;
+                    strip_top_offset_rel_3 = (parseFloat(deco_strip_top_3_offset.value) || 0) - o1;
+                    strip_top_offset_rel_4 = (parseFloat(deco_strip_top_4_offset.value) || 0) - o1;
+                }
+                deco_strip_top_2_offset.value = o1 + strip_top_offset_rel_2;
+                deco_strip_top_3_offset.value = o1 + strip_top_offset_rel_3;
+                deco_strip_top_4_offset.value = o1 + strip_top_offset_rel_4;
+            } else {
+                strip_top_offset_rel_2 = strip_top_offset_rel_3 = strip_top_offset_rel_4 = undefined;
+            }
+        }
+        // 统一颜色：开启时禁用第2/3/4条纹颜色输入，并使其值与第1条纹一致
+        function apply_strip_top_autocolor() {
+            const on = deco_strip_top_autocolor && deco_strip_top_autocolor.checked;
+            deco_strip_top_2_color.disabled = on;
+            deco_strip_top_3_color.disabled = on;
+            deco_strip_top_4_color.disabled = on;
+            if (on) {
+                deco_strip_top_2_color.value = deco_strip_top_1_color.value;
+                deco_strip_top_3_color.value = deco_strip_top_1_color.value;
+                deco_strip_top_4_color.value = deco_strip_top_1_color.value;
+            }
+        }
+        // 统一宽度：开启时禁用第2/3/4条纹宽度输入，并使其值与第1条纹一致
+        function apply_strip_top_autoheight() {
+            const on = deco_strip_top_autoheight && deco_strip_top_autoheight.checked;
+            deco_strip_top_2_width.disabled = on;
+            deco_strip_top_3_width.disabled = on;
+            deco_strip_top_4_width.disabled = on;
+            if (on) {
+                deco_strip_top_2_width.value = deco_strip_top_1_width.value;
+                deco_strip_top_3_width.value = deco_strip_top_1_width.value;
+                deco_strip_top_4_width.value = deco_strip_top_1_width.value;
+            }
+        }
+        // 更新顶部条纹颜色（各条纹 fill 同步对应 color 输入）
+        function update_strip_top_color() {
+            const pairs = [
+                [deco_strip_top_1_color, svgval_strip_top_1],
+                [deco_strip_top_2_color, svgval_strip_top_2],
+                [deco_strip_top_3_color, svgval_strip_top_3],
+                [deco_strip_top_4_color, svgval_strip_top_4]
+            ];
+            pairs.forEach(function (p) {
+                const colorInput = p[0], rect = p[1];
+                if (colorInput && rect) rect.setAttribute('fill', colorInput.value);
+            });
+        }
+
+        // 更新顶部条纹宽度和偏移：y = tmpval_sox_length - offset + width，height = width
+        // 顶部条纹 y 与高度：y = sox_length - (偏移 + 宽度)，height = 宽度（由 sox_length=60 实验标定）
+        function update_strip_top_width_and_offset() {
+            const soxLen = parseFloat(sox_length.value) || 60;
+            const pairs = [
+                [deco_strip_top_1_offset, deco_strip_top_1_width, svgval_strip_top_1],
+                [deco_strip_top_2_offset, deco_strip_top_2_width, svgval_strip_top_2],
+                [deco_strip_top_3_offset, deco_strip_top_3_width, svgval_strip_top_3],
+                [deco_strip_top_4_offset, deco_strip_top_4_width, svgval_strip_top_4]
+            ];
+            pairs.forEach(function (p) {
+                const offsetInput = p[0], widthInput = p[1], rect = p[2];
+                if (!rect) return;
+                const offset = parseFloat(offsetInput.value) || 0;
+                const width = parseFloat(widthInput.value) || 0;
+                rect.setAttribute('y', soxLen - (offset + width));
+                rect.setAttribute('height', width);
+            });
+        }
+        // 脚印：拉取所选 SVG，内联 2 个图案到 stepContainer，中轴线分别 x=4、x=14，缩放以中心为锚点
+        const STEP_PAW_SIZE = 6;   // step_paw 源尺寸
+        const STEP_PAW_CENTER = STEP_PAW_SIZE / 2;  // 3，用于以中心为锚点缩放
+        const STEP_CENTER_X1 = 4;
+        const STEP_CENTER_X2 = 14;
+        function update_deco_step() {
+            if (!stepContainer) return;
+            while (stepContainer.firstChild) stepContainer.removeChild(stepContainer.firstChild);
+            if (!deco_step_switch || !deco_step_switch.checked) return;
+            const scale = parseFloat(deco_step_scale && deco_step_scale.value) || 0.6;
+            const offsetY = parseFloat(deco_step_offset_y && deco_step_offset_y.value) || 7;
+            const color = deco_step_color && deco_step_color.value ? deco_step_color.value : '#ffc0cb';
+            const fileName = 'sox/' + (deco_step_select && deco_step_select.value ? deco_step_select.value : 'step_paw.svg');
+            function setFill(el, fillColor) {
+                if (el.nodeType === 1) {
+                    if (el.tagName === 'path' || el.tagName === 'circle' || el.tagName === 'rect' || el.tagName === 'polygon') el.setAttribute('fill', fillColor);
+                    for (let j = 0; j < el.childNodes.length; j++) setFill(el.childNodes[j], fillColor);
+                }
+            }
+            function makeWrapper(centerX) {
+                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('transform', 'translate(' + centerX + ',' + offsetY + ') scale(' + scale + ') translate(' + (-STEP_PAW_CENTER) + ',' + (-STEP_PAW_CENTER) + ')');
+                return g;
+            }
+            fetch(fileName)
+                .then(function (r) { return r.text(); })
+                .then(function (svgText) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(svgText, 'image/svg+xml');
+                    const root = doc.documentElement;
+                    if (!root || root.tagName !== 'svg') return;
+                    [STEP_CENTER_X1, STEP_CENTER_X2].forEach(function (centerX) {
+                        const wrapper = makeWrapper(centerX);
+                        for (let i = 0; i < root.childNodes.length; i++) {
+                            const node = root.childNodes[i];
+                            wrapper.appendChild(document.importNode(node, true));
+                        }
+                        setFill(wrapper, color);
+                        stepContainer.appendChild(wrapper);
+                    });
+                })
+                .catch(function (err) { console.error('脚印 SVG 加载失败:', fileName, err); });
+        }
+        // 条纹偏移范围：max = sox_length，并将当前值钳位到 [0, max]
+        function update_strip_offset_range() {
+            const maxOffset = parseFloat(sox_length.value) || 60;
+            const offsetInputs = [deco_strip_top_1_offset, deco_strip_top_2_offset, deco_strip_top_3_offset, deco_strip_top_4_offset];
+            offsetInputs.forEach(function (input) {
+                if (!input) return;
+                input.setAttribute('max', maxOffset);
+                const minVal = parseFloat(input.getAttribute('min')) || 0;
+                const val = parseFloat(input.value) || 0;
+                const clamped = Math.max(minVal, Math.min(maxOffset, val));
+                if (clamped !== val) input.value = clamped;
+            });
+        }
+        // 保存配置到JSON文件
+        saveBtn.addEventListener('click', function () {
+            const config = { // 结构体
+                conf_item_name: item_name.value, // 配置名
+                conf_sox_length: sox_length.value, // sox长度
+                conf_sox_model_panty: sox_model_panty.checked, // panty
+                conf_sox_model_tabi: sox_model_tabi.checked, // tabi
+                conf_color_single: color_single.value, // 纯色底色
+                // 底纹条纹
+                conf_bkg_strip_switch: bkg_strip_switch.checked,
+                conf_color_strip: color_strip.value,
+                conf_color_strip_width: color_strip_width.value,
+                // 尖色块
+                conf_deco_toe_switch: deco_toe_switch.checked,
+                conf_deco_toe_color: deco_toe_color.value,
+                conf_deco_toe_height: deco_toe_height.value,
+                // 顶部条纹
+                conf_deco_strip_top_switch: deco_strip_top_switch.checked,
+                conf_deco_strip_top_1_enable: deco_strip_top_1_enable.checked,
+                conf_deco_strip_top_2_enable: deco_strip_top_2_enable.checked,
+                conf_deco_strip_top_3_enable: deco_strip_top_3_enable.checked,
+                conf_deco_strip_top_4_enable: deco_strip_top_4_enable.checked,
+                conf_deco_strip_top_1_color: deco_strip_top_1_color.value,
+                conf_deco_strip_top_2_color: deco_strip_top_2_color.value,
+                conf_deco_strip_top_3_color: deco_strip_top_3_color.value,
+                conf_deco_strip_top_4_color: deco_strip_top_4_color.value,
+                conf_deco_strip_top_1_offset: deco_strip_top_1_offset.value,
+                conf_deco_strip_top_2_offset: deco_strip_top_2_offset.value,
+                conf_deco_strip_top_3_offset: deco_strip_top_3_offset.value,
+                conf_deco_strip_top_4_offset: deco_strip_top_4_offset.value,
+                conf_deco_strip_top_1_width: deco_strip_top_1_width.value,
+                conf_deco_strip_top_2_width: deco_strip_top_2_width.value,
+                conf_deco_strip_top_3_width: deco_strip_top_3_width.value,
+                conf_deco_strip_top_4_width: deco_strip_top_4_width.value,
+                // 脚印
+                conf_deco_step_switch: deco_step_switch.checked,
+                conf_deco_step_select: deco_step_select.value,
+                conf_deco_step_color: deco_step_color.value,
+                conf_deco_step_scale: deco_step_scale.value,
+                conf_deco_step_offset_y: deco_step_offset_y.value
+            };
+
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+            if (item_name.value == "") { item_name.value = "sox" }
+            const exportFileDefaultName = item_name.value + '.json';
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        });
+
+        // 从文件加载配置
+        loadBtn.addEventListener('click', function () {
+            fileInput.click();
+        });
+
+        // 文件输入变化事件
+        fileInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    item_name.value = config.conf_item_name; // 配置名
+                    if (config.conf_sox_length) {
+                        sox_length.value = config.conf_sox_length; // sox长度
+                        update_sox_length();
+                    }
+                    sox_model_panty.checked = config.conf_sox_model_panty; // panty
+                    update_sox_model_panty();
+                    sox_model_tabi.checked = config.conf_sox_model_tabi; // panty
+                    update_sox_model_tabi();
+                    if (config.conf_color_single) {
+                        color_single.value = config.conf_color_single; // 纯色底色
+                        update_color_single();
+                    }
+                    // 底纹条纹
+                    if (config.conf_bkg_strip_switch !== undefined) bkg_strip_switch.checked = config.conf_bkg_strip_switch;
+                    if (config.conf_color_strip !== undefined) color_strip.value = config.conf_color_strip;
+                    if (config.conf_color_strip_width !== undefined) color_strip_width.value = config.conf_color_strip_width;
+                    update_bkg_strip();
+                    // 尖色块
+                    if (config.conf_deco_toe_switch !== undefined) deco_toe_switch.checked = config.conf_deco_toe_switch;
+                    if (config.conf_deco_toe_color !== undefined) deco_toe_color.value = config.conf_deco_toe_color;
+                    if (config.conf_deco_toe_height !== undefined) deco_toe_height.value = config.conf_deco_toe_height;
+                    update_toe();
+                    // 顶部条纹
+                    if (config.conf_deco_strip_top_switch !== undefined) deco_strip_top_switch.checked = config.conf_deco_strip_top_switch; // 顶部条纹总开关
+                    if (config.conf_deco_strip_top_1_enable !== undefined) deco_strip_top_1_enable.checked = config.conf_deco_strip_top_1_enable; // 顶部条纹1开关
+                    if (config.conf_deco_strip_top_2_enable !== undefined) deco_strip_top_2_enable.checked = config.conf_deco_strip_top_2_enable; // 顶部条纹2开关
+                    if (config.conf_deco_strip_top_3_enable !== undefined) deco_strip_top_3_enable.checked = config.conf_deco_strip_top_3_enable; // 顶部条纹3开关
+                    if (config.conf_deco_strip_top_4_enable !== undefined) deco_strip_top_4_enable.checked = config.conf_deco_strip_top_4_enable; // 顶部条纹4开关
+                    if (config.conf_deco_strip_top_1_color !== undefined) deco_strip_top_1_color.value = config.conf_deco_strip_top_1_color; // 顶部条纹1颜色
+                    if (config.conf_deco_strip_top_2_color !== undefined) deco_strip_top_2_color.value = config.conf_deco_strip_top_2_color; // 顶部条纹2颜色
+                    if (config.conf_deco_strip_top_3_color !== undefined) deco_strip_top_3_color.value = config.conf_deco_strip_top_3_color; // 顶部条纹3颜色
+                    if (config.conf_deco_strip_top_4_color !== undefined) deco_strip_top_4_color.value = config.conf_deco_strip_top_4_color; // 顶部条纹4颜色
+                    if (config.conf_deco_strip_top_1_offset !== undefined) deco_strip_top_1_offset.value = config.conf_deco_strip_top_1_offset; // 顶部条纹1偏移
+                    if (config.conf_deco_strip_top_2_offset !== undefined) deco_strip_top_2_offset.value = config.conf_deco_strip_top_2_offset; // 顶部条纹2偏移
+                    if (config.conf_deco_strip_top_3_offset !== undefined) deco_strip_top_3_offset.value = config.conf_deco_strip_top_3_offset; // 顶部条纹3偏移
+                    if (config.conf_deco_strip_top_4_offset !== undefined) deco_strip_top_4_offset.value = config.conf_deco_strip_top_4_offset; // 顶部条纹4偏移
+                    if (config.conf_deco_strip_top_1_width !== undefined) deco_strip_top_1_width.value = config.conf_deco_strip_top_1_width; // 顶部条纹1宽度
+                    if (config.conf_deco_strip_top_2_width !== undefined) deco_strip_top_2_width.value = config.conf_deco_strip_top_2_width; // 顶部条纹2宽度
+                    if (config.conf_deco_strip_top_3_width !== undefined) deco_strip_top_3_width.value = config.conf_deco_strip_top_3_width; // 顶部条纹3宽度
+                    if (config.conf_deco_strip_top_4_width !== undefined) deco_strip_top_4_width.value = config.conf_deco_strip_top_4_width; // 顶部条纹4宽度
+                    update_strip_offset_range();
+                    update_strip_top_visibility();
+                    update_strip_top_color();
+                    update_strip_top_width_and_offset();
+                    // 脚印
+                    if (config.conf_deco_step_switch !== undefined) deco_step_switch.checked = config.conf_deco_step_switch;
+                    if (config.conf_deco_step_select !== undefined) deco_step_select.value = config.conf_deco_step_select;
+                    if (config.conf_deco_step_color !== undefined) deco_step_color.value = config.conf_deco_step_color;
+                    if (config.conf_deco_step_scale !== undefined) {
+                        deco_step_scale.value = config.conf_deco_step_scale;
+                        if (disval_deco_step_scale) disval_deco_step_scale.textContent = Number(deco_step_scale.value).toFixed(1);
+                    }
+                    if (config.conf_deco_step_offset_y !== undefined) {
+                        deco_step_offset_y.value = config.conf_deco_step_offset_y;
+                        if (disval_deco_step_offset_y) disval_deco_step_offset_y.textContent = Number(deco_step_offset_y.value).toFixed(1);
+                    }
+                    update_deco_step();
+                } catch (error) {
+                    console.error('读取配置文件失败:', error);
+                    alert('配置文件格式错误！');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // 重置
+        resetBtn.addEventListener('click', function () {
+            item_name.value = ''; // 配置名
+            update_item_name();
+            sox_length.value = 60; // sox长度
+            update_sox_length();
+            sox_model_panty.checked = false; // panty
+            update_sox_model_panty();
+            sox_model_tabi.checked = false; // tabi
+            update_sox_model_tabi();
+            color_single.value = '#ffffff'; // 纯色底色
+            update_color_single();
+            // 底纹条纹
+            bkg_strip_switch.checked = false;
+            color_strip.value = '#000000';
+            color_strip_width.value = '5';
+            update_bkg_strip();
+            // 尖色块
+            deco_toe_switch.checked = false;
+            deco_toe_color.value = '#000000';
+            deco_toe_height.value = '2';
+            update_toe();
+            // 顶部条纹
+            deco_strip_top_switch.checked = false; // 顶部条纹总开关
+            deco_strip_top_1_enable.checked = true; // 顶部条纹1开关
+            deco_strip_top_2_enable.checked = true; // 顶部条纹2开关
+            deco_strip_top_3_enable.checked = true; // 顶部条纹3开关
+            deco_strip_top_4_enable.checked = false; // 顶部条纹4开关
+            deco_strip_top_1_color.value = '#000000'; // 顶部条纹1颜色
+            deco_strip_top_2_color.value = '#000000'; // 顶部条纹2颜色
+            deco_strip_top_3_color.value = '#000000'; // 顶部条纹3颜色
+            deco_strip_top_4_color.value = '#000000'; // 顶部条纹4颜色
+            deco_strip_top_1_offset.value = '4'; // 顶部条纹1偏移
+            deco_strip_top_2_offset.value = '6'; // 顶部条纹2偏移
+            deco_strip_top_3_offset.value = '8'; // 顶部条纹3偏移
+            deco_strip_top_4_offset.value = '10'; // 顶部条纹4偏移
+            deco_strip_top_1_width.value = '1'; // 顶部条纹1宽度
+            deco_strip_top_2_width.value = '1'; // 顶部条纹2宽度
+            deco_strip_top_3_width.value = '1'; // 顶部条纹3宽度
+            deco_strip_top_4_width.value = '1'; // 顶部条纹4宽度
+            // 顶部条纹
+            update_strip_top_visibility();
+            update_strip_top_color();
+            update_strip_top_width_and_offset();
+            // 脚印
+            deco_step_switch.checked = false;
+            deco_step_select.value = 'step_paw.svg';
+            deco_step_color.value = '#ffc0cb';
+            deco_step_scale.value = '0.6';
+            deco_step_offset_y.value = '7';
+            if (disval_deco_step_scale) disval_deco_step_scale.textContent = '0.6';
+            if (disval_deco_step_offset_y) disval_deco_step_offset_y.textContent = '7';
+            update_deco_step();
+        });
+
+        // 保存SVG
+        // 保存SVG到文件
+        const saveSvgBtn = document.getElementById('saveSvgBtn');
+        saveSvgBtn.addEventListener('click', function () {
+            // 获取SVG元素的XML字符串
+            const svgData = new XMLSerializer().serializeToString(document.getElementById('svgDisplay'));
+            // 创建Blob对象
+            const blob = new Blob([svgData], { type: "image/svg+xml" });
+            // 创建下载链接
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            if (item_name.value == "") { item_name.value = "sox" }
+            link.download = item_name.value + ".svg";
+            // 触发下载
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            // 释放URL对象
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+
+</html>
