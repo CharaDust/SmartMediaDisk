@@ -32,6 +32,17 @@
         .btn-group {
             margin-top: 10px;
         }
+
+        /* 表单内表格横向溢出时显示滚动条 */
+        .form-container .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            max-width: 100%;
+        }
+        .form-container .table-responsive .table {
+            width: max-content;
+            min-width: 100%;
+        }
     </style>
 </head>
 
@@ -40,7 +51,7 @@
         <div class="row">
             <!-- 左侧表单 -->
             <div class="col-md-8 form-container">
-                <h3>SVG 控制面板</h3>
+                <h3>SOX 设计</h3>
                 <form id="controlForm">
                     <!-- 标签页 -->
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -60,9 +71,9 @@
                                 aria-controls="setdeco-tab-pane" aria-selected="false">装饰</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
-                                data-bs-target="#disabled-tab-pane" type="button" role="tab"
-                                aria-controls="disabled-tab-pane" aria-selected="false" disabled>文字</button>
+                            <button class="nav-link" id="settext-tab" data-bs-toggle="tab"
+                                data-bs-target="#settext-tab-pane" type="button" role="tab"
+                                aria-controls="settext-tab-pane" aria-selected="false">文字</button>
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
@@ -140,7 +151,7 @@
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" type="checkbox" id="bkg_strip_switch"
                                                 value="1">
-                                            <label class="form-check-label" for="bkg_strip_switch">使用条纹底纹</label>
+                                            <label class="form-check-label" for="bkg_strip_switch">使用底纹</label>
                                         </div>
                                         <div class="mb-3">
                                             <label for="color_strip" class="form-label">条纹颜色</label>
@@ -392,8 +403,8 @@
                                                 <button type="button" class="btn btn-outline-primary" id="deco_custom_update_btn">更新图形</button>
                                             </div>
                                             <div class="table-responsive">
-                                                <table class="table table-sm table-bordered">
-                                                    <thead>
+                                                <table class="table table-sm table-bordered table-striped table-hover">
+                                                    <thead class="table-light">
                                                         <tr>
                                                             <th style="width:4em">序号</th>
                                                             <th>svg元素（输入框，用于编写自定义svg元素）</th>
@@ -409,8 +420,262 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
-                            tabindex="0">...</div>
+                        <div class="tab-pane fade" id="settext-tab-pane" role="tabpanel" aria-labelledby="settext-tab"
+                            tabindex="0">
+                            <div class="container mb-3">
+                                <ul class="nav nav-tabs" id="settext-inner-tablist" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="settextlr-tab" data-bs-toggle="tab"
+                                            data-bs-target="#settextlr-tab-pane" type="button" role="tab"
+                                            aria-controls="settextlr-tab-pane" aria-selected="true">左右标</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="settexttoe-tab" data-bs-toggle="tab"
+                                            data-bs-target="#settexttoe-tab-pane" type="button" role="tab"
+                                            aria-controls="settexttoe-tab-pane" aria-selected="false">前尖</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="settextelite-tab" data-bs-toggle="tab"
+                                            data-bs-target="#settextelite-tab-pane" type="button" role="tab"
+                                            aria-controls="settextelite-tab-pane" aria-selected="false">纵向文本</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="settextcustom-tab" data-bs-toggle="tab"
+                                            data-bs-target="#settextcustom-tab-pane" type="button" role="tab"
+                                            aria-controls="settextcustom-tab-pane" aria-selected="false">自由文本</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="settext-inner-tabcontent">
+                                    <div class="tab-pane fade show active" id="settextlr-tab-pane" role="tabpanel"
+                                        aria-labelledby="settextlr-tab" tabindex="0">
+                                        <!-- 左右标 -->
+                                        <div class="container">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="text_lr_switch"
+                                                    value="1">
+                                                <label class="form-check-label" for="text_lr_switch">使用文字</label>
+                                            </div>
+                                            <!-- 文字 - 前对角LR (class="text-lrF") -->
+                                            <div class="mb-3">
+                                                <label class="form-label">前对角 LR</label>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="text_lrF_switch"
+                                                        value="1">
+                                                    <label class="form-check-label" for="text_lrF_switch">显示</label>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">颜色</span>
+                                                    <input type="color" id="text_lrF_color" class="form-control form-control-color" value="#000000">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">纵向偏移</span>
+                                                    <input type="range" id="text_lrF_offset" class="form-control form-range"
+                                                        min="6" max="20" step="0.5" value="6">
+                                                    <span id="disval_text_lrF_offset" class="input-group-text">6</span>
+                                                </div>
+                                            </div>
+                                            <!-- 文字 - 底LR (class="text-lrB") -->
+                                            <div class="mb-3">
+                                                <label class="form-label">底 LR</label>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="text_lrB_switch"
+                                                        value="1">
+                                                    <label class="form-check-label" for="text_lrB_switch">显示</label>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">颜色</span>
+                                                    <input type="color" id="text_lrB_color" class="form-control form-control-color" value="#000000">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="settexttoe-tab-pane" role="tabpanel"
+                                        aria-labelledby="settexttoe-tab" tabindex="0">
+                                        <!-- 前尖 -->
+                                        <div class="container">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="text_toe_switch"
+                                                    value="1">
+                                                <label class="form-check-label" for="text_toe_switch">使用文字</label>
+                                            </div>
+                                            <!-- 文字 (class="text-toeF") -->
+                                            <div class="mb-3">
+                                                <label class="form-label">文字</label>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="text_toeF_switch"
+                                                        value="1">
+                                                    <label class="form-check-label" for="text_toeF_switch">显示</label>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">颜色</span>
+                                                    <input type="color" id="text_toeF_color" class="form-control form-control-color" value="#000000">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_toeF_textL" class="form-label">文字左</label>
+                                                    <input type="text" id="text_toeF_textL" class="form-control" placeholder="TEXT-L" value="TEXT-L">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_toeF_textR" class="form-label">文字右</label>
+                                                    <input type="text" id="text_toeF_textR" class="form-control" placeholder="TEXT-R" value="TEXT-R">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">缩放</span>
+                                                    <input type="range" id="text_toeF_scale" class="form-control form-range"
+                                                        min="0.5" max="5" step="0.1" value="1">
+                                                    <span id="disval_text_toeF_scale" class="input-group-text">1</span>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">纵向偏移</span>
+                                                    <input type="range" id="text_toeF_offset" class="form-control form-range"
+                                                        min="0" max="20" step="0.1" value="6">
+                                                    <span id="disval_text_toeF_offset" class="input-group-text">6</span>
+                                                </div>
+                                            </div>
+                                            <!-- 尖线 (id="text_toeline") -->
+                                            <div class="mb-3">
+                                                <label class="form-label">尖线</label>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="text_toeline_switch"
+                                                        value="1">
+                                                    <label class="form-check-label" for="text_toeline_switch">显示</label>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">颜色</span>
+                                                    <input type="color" id="text_toeline_color" class="form-control form-control-color" value="#000000">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="settextelite-tab-pane" role="tabpanel"
+                                        aria-labelledby="settextelite-tab" tabindex="0">
+                                        <!-- 纵向文本 -->
+                                        <div class="container">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="text_elite_switch"
+                                                    value="1">
+                                                <label class="form-check-label" for="text_elite_switch">使用文字</label>
+                                            </div>
+                                            <!-- 后竖写 (class="text-eliteB") -->
+                                            <div class="mb-3">
+                                                <label class="form-label">后竖写</label>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="text_eliteB_switch"
+                                                        value="1">
+                                                    <label class="form-check-label" for="text_eliteB_switch">显示</label>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_eliteB_textL" class="form-label">文字左</label>
+                                                    <input type="text" id="text_eliteB_textL" class="form-control" placeholder="TEXT-L" value="TEXT-L">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_eliteB_textR" class="form-label">文字右</label>
+                                                    <input type="text" id="text_eliteB_textR" class="form-control" placeholder="TEXT-R" value="TEXT-R">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">颜色</span>
+                                                    <input type="color" id="text_eliteB_color" class="form-control form-control-color" value="#000000">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">横向偏移</span>
+                                                    <input type="range" id="text_eliteB_offset" class="form-control form-range"
+                                                        min="-20" max="20" step="0.5" value="0">
+                                                    <span id="disval_text_eliteB_offset" class="input-group-text">0</span>
+                                                </div>
+                                            </div>
+                                            <!-- 内竖写 (class="text-eliteI") -->
+                                            <div class="mb-3">
+                                                <label class="form-label">内竖写</label>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="text_eliteI_switch"
+                                                        value="1">
+                                                    <label class="form-check-label" for="text_eliteI_switch">显示</label>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_eliteI_textL" class="form-label">文字左</label>
+                                                    <input type="text" id="text_eliteI_textL" class="form-control" placeholder="TEXT-IL" value="TEXT-IL">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_eliteI_textR" class="form-label">文字右</label>
+                                                    <input type="text" id="text_eliteI_textR" class="form-control" placeholder="TEXT-IR" value="TEXT-IR">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">颜色</span>
+                                                    <input type="color" id="text_eliteI_color" class="form-control form-control-color" value="#000000">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">横向偏移</span>
+                                                    <input type="range" id="text_eliteI_offset" class="form-control form-range"
+                                                        min="-20" max="20" step="0.5" value="0">
+                                                    <span id="disval_text_eliteI_offset" class="input-group-text">0</span>
+                                                </div>
+                                            </div>
+                                            <!-- 外竖写 (class="text-eliteO") -->
+                                            <div class="mb-3">
+                                                <label class="form-label">外竖写</label>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" id="text_eliteO_switch"
+                                                        value="1">
+                                                    <label class="form-check-label" for="text_eliteO_switch">显示</label>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_eliteO_textL" class="form-label">文字左</label>
+                                                    <input type="text" id="text_eliteO_textL" class="form-control" placeholder="TEXT-OL" value="TEXT-OL">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label for="text_eliteO_textR" class="form-label">文字右</label>
+                                                    <input type="text" id="text_eliteO_textR" class="form-control" placeholder="TEXT-OR" value="TEXT-OR">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">颜色</span>
+                                                    <input type="color" id="text_eliteO_color" class="form-control form-control-color" value="#000000">
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <span class="input-group-text">横向偏移</span>
+                                                    <input type="range" id="text_eliteO_offset" class="form-control form-range"
+                                                        min="-20" max="20" step="0.5" value="0">
+                                                    <span id="disval_text_eliteO_offset" class="input-group-text">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="settextcustom-tab-pane" role="tabpanel"
+                                        aria-labelledby="settextcustom-tab" tabindex="0">
+                                        <!-- 自由文本 -->
+                                        <div class="container">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="text_custom_switch" value="1">
+                                                <label class="form-check-label" for="text_custom_switch">使用自由文本</label>
+                                            </div>
+                                            <div class="btn-group mb-3" role="group">
+                                                <button type="button" class="btn btn-outline-primary" id="text_custom_add_btn">新增文本</button>
+                                                <button type="button" class="btn btn-outline-secondary" id="text_custom_clear_btn">清空文本</button>
+                                                <button type="button" class="btn btn-outline-primary" id="text_custom_update_btn">更新文本</button>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-bordered table-striped table-hover">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th style="width:4em">序号</th>
+                                                            <th style="width:4em">显示</th>
+                                                            <th>文本内容</th>
+                                                            <th style="width:10em">字体</th>
+                                                            <th style="width:5em">颜色</th>
+                                                            <th style="width:5em">x</th>
+                                                            <th style="width:5em">y</th>
+                                                            <th style="width:5em">缩放</th>
+                                                            <th style="width:6em">旋转</th>
+                                                            <th style="width:12em">操作</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="text_custom_tbody">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!-- 按钮 -->
                     <div class="btn-group" role="group">
@@ -606,6 +871,9 @@
                                 font-size="10" fill="black" text-anchor="middle" visibility="hidden">
                                 R
                             </text>
+                            <!-- 尖线 (前尖矩形) -->
+                            <rect id="text_toeline" class="sox text-toeline" mask="url(#stok)" x="0" y="3.9"
+                                height="0.2" width="40" fill="black" visibility="hidden" />
                             <!-- 文字 - 前尖 -->
                             <text class="text-toeF" mask="url(#stok)" x="34" y="6" font-family="Georgia, serif"
                                 font-size="2" fill="black" text-anchor="middle" visibility="hidden">
@@ -657,689 +925,10 @@
         </div>
     </div>
 
-    <script>
-        // 获取DOM元素
-        const item_name = document.getElementById('item_name'); // 配置名
-        const sox_length = document.getElementById('sox_length'); // sox长度
-        const disval_sox_length = document.getElementById('disval_sox_length'); // DISsox长度
-        const svgval_sox_length = document.getElementsByClassName('maskB'); // SVGsox长度
-        const sox_model_panty = document.getElementById('sox_model_panty'); // panty
-        const svgval_sox_model_panty = document.getElementsByClassName('maskP'); // SVGpanty 
-        const sox_model_tabi = document.getElementById('sox_model_tabi'); // tabi
-        const svgval_sox_model_tabi = document.getElementsByClassName('maskT'); // SVGtabi
-        const color_single = document.getElementById('color_single'); // 纯色底色
-        const svgval_color_single = document.getElementById('bkgSingleColor'); // SVG纯色底色
-
-        // 底纹条纹（实时生成，class="sox bkg stripC"）
-        const bkg_strip_switch = document.getElementById('bkg_strip_switch');
-        const color_strip = document.getElementById('color_strip');
-        const color_strip_width = document.getElementById('color_strip_width');
-        const disval_color_strip_width = document.getElementById('disval_color_strip_width');
-        const bkgStripContainer = document.getElementById('bkgStripContainer');
-        const SVG_VIEW_HEIGHT = 150; // 与底色 rect 一致
-
-        // 尖色块
-        const deco_toe_switch = document.getElementById('deco_toe_switch');
-        const deco_toe_color = document.getElementById('deco_toe_color');
-        const deco_toe_height = document.getElementById('deco_toe_height');
-        const disval_deco_toe_height = document.getElementById('disval_deco_toe_height');
-        const svgval_toe = document.getElementById('toe'); // SVG 尖色块 rect
-
-        // 顶部条纹
-        const svgval_strip_top_1 = document.getElementById('stripT1'); // SVG顶部条纹1
-        const svgval_strip_top_2 = document.getElementById('stripT2'); // SVG顶部条纹2
-        const svgval_strip_top_3 = document.getElementById('stripT3'); // SVG顶部条纹3
-        const svgval_strip_top_4 = document.getElementById('stripT4'); // SVG顶部条纹4
-        const deco_strip_top_switch = document.getElementById('deco_strip_top_switch'); // 顶部条纹条纹总开关
-        const deco_strip_top_1_enable = document.getElementById('deco_strip_top_1_enable'); // 顶部条纹1开关
-        const deco_strip_top_2_enable = document.getElementById('deco_strip_top_2_enable'); // 顶部条纹2开关
-        const deco_strip_top_3_enable = document.getElementById('deco_strip_top_3_enable'); // 顶部条纹3开关
-        const deco_strip_top_4_enable = document.getElementById('deco_strip_top_4_enable'); // 顶部条纹4开关
-        const deco_strip_top_1_color = document.getElementById('deco_strip_top_1_color'); // 顶部条纹1颜色
-        const deco_strip_top_2_color = document.getElementById('deco_strip_top_2_color'); // 顶部条纹2颜色
-        const deco_strip_top_3_color = document.getElementById('deco_strip_top_3_color'); // 顶部条纹3颜色
-        const deco_strip_top_4_color = document.getElementById('deco_strip_top_4_color'); // 顶部条纹4颜色
-        const deco_strip_top_1_offset = document.getElementById('deco_strip_top_1_offset'); // 顶部条纹1偏移
-        const deco_strip_top_2_offset = document.getElementById('deco_strip_top_2_offset'); // 顶部条纹2偏移
-        const deco_strip_top_3_offset = document.getElementById('deco_strip_top_3_offset'); // 顶部条纹3偏移
-        const deco_strip_top_4_offset = document.getElementById('deco_strip_top_4_offset'); // 顶部条纹4偏移
-        const deco_strip_top_1_width = document.getElementById('deco_strip_top_1_width'); // 顶部条纹1宽度
-        const deco_strip_top_2_width = document.getElementById('deco_strip_top_2_width'); // 顶部条纹2宽度 
-        const deco_strip_top_3_width = document.getElementById('deco_strip_top_3_width'); // 顶部条纹3宽度
-        const deco_strip_top_4_width = document.getElementById('deco_strip_top_4_width'); // 顶部条纹4宽度
-        const deco_strip_top_autocolor = document.getElementById('deco_strip_top_autocolor'); // 统一颜色
-        const deco_strip_top_autopos = document.getElementById('deco_strip_top_autopos'); // 整体位移
-        const deco_strip_top_autoheight = document.getElementById('deco_strip_top_autoheight'); // 统一宽度
-        // 整体位移开启时，2/3/4 条纹相对条纹1的偏移差（在开启时捕获）
-        let strip_top_offset_rel_2, strip_top_offset_rel_3, strip_top_offset_rel_4;
-
-        // 脚印
-        const deco_step_switch = document.getElementById('deco_step_switch');
-        const deco_step_select = document.getElementById('deco_step_select');
-        const deco_step_color = document.getElementById('deco_step_color');
-        const deco_step_scale = document.getElementById('deco_step_scale');
-        const deco_step_offset_y = document.getElementById('deco_step_offset_y');
-        const disval_deco_step_scale = document.getElementById('disval_deco_step_scale');
-        const disval_deco_step_offset_y = document.getElementById('disval_deco_step_offset_y');
-        const stepContainer = document.getElementById('stepContainer'); // 脚印内联 SVG 容器
-        const SVG_VIEW_WIDTH = 100;
-
-        // 自由图形
-        const deco_custom_switch = document.getElementById('deco_custom_switch');
-        const deco_custom_add_btn = document.getElementById('deco_custom_add_btn');
-        const deco_custom_clear_btn = document.getElementById('deco_custom_clear_btn');
-        const deco_custom_update_btn = document.getElementById('deco_custom_update_btn');
-        const deco_custom_tbody = document.getElementById('deco_custom_tbody');
-
-        // 文件按钮
-        const saveBtn = document.getElementById('saveBtn');
-        const loadBtn = document.getElementById('loadBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const fileInput = document.getElementById('fileInput');
-        const controlForm = document.getElementById('controlForm');
-
-
-        /********************************
-            初始化
-        ********************************/
-        update_sox_length(); // sox长度
-        update_sox_model_panty(); // panty
-        update_sox_model_tabi(); // tabi
-        update_color_single(); // 纯色底色
-        update_strip_top_visibility(); // 顶部条纹显隐
-        update_strip_top_color(); // 顶部条纹颜色
-        update_strip_top_width_and_offset(); // 顶部条纹宽度和偏移
-        apply_strip_top_autocolor(); // 顶部条纹统一颜色
-        apply_strip_top_autopos(); // 整体位移
-        apply_strip_top_autoheight(); // 统一宽度
-        update_toe(); // 尖色块
-        update_bkg_strip(); // 底纹条纹
-        update_deco_step(); // 脚印：内联 SVG 并应用颜色/缩放/偏移
-        /********************************
-            监听
-        ********************************/
-        // 监听sox长度
-        sox_length.addEventListener('input', function () {
-            update_sox_length();
-        });
-        // 监听panty
-        sox_model_panty.addEventListener('input', function () {
-            update_sox_model_panty();
-        })
-        // 监听tabi
-        sox_model_tabi.addEventListener('input', function () {
-            update_sox_model_tabi();
-        })
-        // 监听纯色底色
-        color_single.addEventListener('input', function () {
-            update_color_single();
-        });
-        // 监听底纹条纹
-        bkg_strip_switch.addEventListener('change', update_bkg_strip);
-        color_strip.addEventListener('input', update_bkg_strip);
-        color_strip_width.addEventListener('input', update_bkg_strip);
-        // 监听尖色块
-        deco_toe_switch.addEventListener('change', update_toe);
-        deco_toe_color.addEventListener('input', update_toe);
-        deco_toe_height.addEventListener('input', update_toe);
-        // 监听条纹总开关与各条纹
-        deco_strip_top_switch.addEventListener('change', update_strip_top_visibility);
-        deco_strip_top_1_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹1
-        deco_strip_top_2_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹2
-        deco_strip_top_3_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹3
-        deco_strip_top_4_enable.addEventListener('change', update_strip_top_visibility); // 顶部条纹4
-        // 监听条纹颜色（统一颜色开启时，仅条纹1可调，2/3/4 与条纹1同步）
-        deco_strip_top_1_color.addEventListener('input', function () {
-            apply_strip_top_autocolor();
-            update_strip_top_color();
-        });
-        deco_strip_top_2_color.addEventListener('input', update_strip_top_color);
-        deco_strip_top_3_color.addEventListener('input', update_strip_top_color);
-        deco_strip_top_4_color.addEventListener('input', update_strip_top_color);
-        deco_strip_top_autocolor.addEventListener('change', function () {
-            apply_strip_top_autocolor();
-            update_strip_top_color();
-        });
-        // 监听条纹宽度与偏移（整体位移开启时，仅条纹1可调偏移，2/3/4 相对条纹1锁定）
-        deco_strip_top_1_offset.addEventListener('input', function () {
-            apply_strip_top_autopos();
-            update_strip_offset_range();
-            update_strip_top_width_and_offset();
-        });
-        deco_strip_top_1_width.addEventListener('input', function () {
-            apply_strip_top_autoheight();
-            update_strip_top_width_and_offset();
-        });
-        deco_strip_top_2_offset.addEventListener('input', update_strip_top_width_and_offset);
-        deco_strip_top_2_width.addEventListener('input', update_strip_top_width_and_offset);
-        deco_strip_top_3_offset.addEventListener('input', update_strip_top_width_and_offset);
-        deco_strip_top_3_width.addEventListener('input', update_strip_top_width_and_offset);
-        deco_strip_top_4_offset.addEventListener('input', update_strip_top_width_and_offset);
-        deco_strip_top_4_width.addEventListener('input', update_strip_top_width_and_offset);
-        deco_strip_top_autopos.addEventListener('change', function () {
-            apply_strip_top_autopos();
-            update_strip_offset_range();
-            update_strip_top_width_and_offset();
-        });
-        deco_strip_top_autoheight.addEventListener('change', function () {
-            apply_strip_top_autoheight();
-            update_strip_top_width_and_offset();
-        });
-        // 监听脚印：缩放、纵向偏移、开关、下拉、颜色
-        deco_step_offset_y.addEventListener('input', function () {
-            if (disval_deco_step_offset_y) disval_deco_step_offset_y.textContent = Number(deco_step_offset_y.value).toFixed(1);
-            update_deco_step();
-        });
-        deco_step_switch.addEventListener('change', update_deco_step);
-        deco_step_select.addEventListener('change', update_deco_step);
-        deco_step_color.addEventListener('input', update_deco_step);
-        deco_step_scale.addEventListener('input', function () {
-            if (disval_deco_step_scale) disval_deco_step_scale.textContent = Number(deco_step_scale.value).toFixed(1);
-            update_deco_step();
-        });
-
-        // 自由图形：动态表格
-        function refreshDecoCustomRowNumbers() {
-            const rows = deco_custom_tbody ? deco_custom_tbody.querySelectorAll('tr') : [];
-            rows.forEach((tr, i) => {
-                const idxCell = tr.querySelector('.deco_custom_index');
-                if (idxCell) idxCell.textContent = i + 1;
-                const btnUp = tr.querySelector('.deco_custom_btn_up');
-                const btnDown = tr.querySelector('.deco_custom_btn_down');
-                if (btnUp) btnUp.style.display = i === 0 ? 'none' : '';
-                if (btnDown) btnDown.style.display = i === rows.length - 1 ? 'none' : '';
-            });
-        }
-        function addDecoCustomRow() {
-            if (!deco_custom_tbody) return;
-            const tr = document.createElement('tr');
-            tr.innerHTML =
-                '<td class="deco_custom_index"></td>' +
-                '<td><input type="text" class="form-control form-control-sm deco_custom_svg_input" placeholder="如 &lt;circle r=\'5\' cx=\'10\' cy=\'10\'/&gt;"></td>' +
-                '<td><div class="btn-group btn-group-sm"><button type="button" class="btn btn-outline-danger deco_custom_btn_del">删除</button>' +
-                '<button type="button" class="btn btn-outline-secondary deco_custom_btn_up">上移</button>' +
-                '<button type="button" class="btn btn-outline-secondary deco_custom_btn_down">下移</button></div></td>';
-            deco_custom_tbody.appendChild(tr);
-            refreshDecoCustomRowNumbers();
-        }
-        if (deco_custom_add_btn) {
-            deco_custom_add_btn.addEventListener('click', addDecoCustomRow);
-        }
-        if (deco_custom_clear_btn) {
-            deco_custom_clear_btn.addEventListener('click', function () {
-                if (deco_custom_tbody) deco_custom_tbody.innerHTML = '';
-            });
-        }
-        if (deco_custom_update_btn) {
-            deco_custom_update_btn.addEventListener('click', function () {
-                // 更新图形：可在此处根据表格内容刷新 SVG 显示
-            });
-        }
-        if (deco_custom_tbody) {
-            deco_custom_tbody.addEventListener('click', function (e) {
-                const tr = e.target.closest('tr');
-                if (!tr || tr.parentElement !== deco_custom_tbody) return;
-                const rows = Array.from(deco_custom_tbody.querySelectorAll('tr'));
-                const i = rows.indexOf(tr);
-                if (e.target.classList.contains('deco_custom_btn_del')) {
-                    tr.remove();
-                    refreshDecoCustomRowNumbers();
-                } else if (e.target.classList.contains('deco_custom_btn_up') && i > 0) {
-                    deco_custom_tbody.insertBefore(tr, rows[i - 1]);
-                    refreshDecoCustomRowNumbers();
-                } else if (e.target.classList.contains('deco_custom_btn_down') && i < rows.length - 1) {
-                    const next = rows[i + 1];
-                    deco_custom_tbody.insertBefore(next, tr);
-                    refreshDecoCustomRowNumbers();
-                }
-            });
-        }
-
-        /********************************
-            更新
-        ********************************/
-        // 更新配置名
-        function update_item_name() { }
-        // 更新sox长度
-        function update_sox_length() {
-            update_strip_offset_range();
-            const tmpval_sox_length = sox_length.value - 4;
-            disval_sox_length.textContent = sox_length.value + "cm";
-            if (svgval_sox_length) {
-                for (let i = 0; i < svgval_sox_length.length; i++) {
-                    svgval_sox_length[i].setAttribute('height', tmpval_sox_length);
-                }
-                for (let i = 0; i < svgval_sox_model_panty.length; i++) {
-                    svgval_sox_model_panty[i].setAttribute('y', tmpval_sox_length + 4);
-                }
-                update_strip_top_width_and_offset();
-                update_bkg_strip();
-            }
-        }
-        // 更新panty
-        function update_sox_model_panty() {
-            const tmpval_sox_model_panty = sox_model_panty.checked;
-            for (let i = 0; i < svgval_sox_model_panty.length; i++) {
-                if (tmpval_sox_model_panty) {
-                    svgval_sox_model_panty[i].setAttribute('visibility', "visible");
-                    sox_length.setAttribute('min', 45);
-                    if (sox_length.value <= 45) {
-                        sox_length.value = 45;
-                        update_sox_length();
-                    } else {
-                        update_strip_offset_range();
-                    }
-                }
-                else {
-                    svgval_sox_model_panty[i].setAttribute('visibility', "hidden");
-                    sox_length.setAttribute('min', 25);
-                    update_strip_offset_range();
-                }
-            }
-        }
-        // 更新tabi
-        function update_sox_model_tabi() {
-            const tmpval_sox_model_tabi = sox_model_tabi.checked;
-            for (let i = 0; i < svgval_sox_model_tabi.length; i++) {
-                if (tmpval_sox_model_tabi) { svgval_sox_model_tabi[i].setAttribute('visibility', "visible"); }
-                else { svgval_sox_model_tabi[i].setAttribute('visibility', "hidden"); }
-            }
-        }
-        // 更新纯色底色
-        function update_color_single() {
-            const tmpval_color_single = color_single.value;
-            if (svgval_color_single) {
-                svgval_color_single.setAttribute('fill', tmpval_color_single);
-            }
-        }
-        // 底纹条纹：根据总开关、颜色、宽度实时生成 rect（y=0,2w,4w,... height=w, class="sox bkg stripC"）
-        function update_bkg_strip() {
-            if (!bkgStripContainer) return;
-            while (bkgStripContainer.firstChild) bkgStripContainer.removeChild(bkgStripContainer.firstChild);
-            const w = parseFloat(color_strip_width && color_strip_width.value) || 5;
-            if (disval_color_strip_width) disval_color_strip_width.textContent = Number(w).toFixed(1);
-            if (!bkg_strip_switch || !bkg_strip_switch.checked) return;
-            const fillColor = color_strip && color_strip.value ? color_strip.value : '#000000';
-            for (let y = 0; y + w <= sox_length.value; y += w * 2) {
-                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                rect.setAttribute('x', 0);
-                rect.setAttribute('y', y);
-                rect.setAttribute('width', 100);
-                rect.setAttribute('height', w);
-                rect.setAttribute('fill', fillColor);
-                rect.setAttribute('mask', 'url(#stok)');
-                rect.setAttribute('class', 'sox bkg stripC');
-                bkgStripContainer.appendChild(rect);
-            }
-        }
-        // 更新尖色块：使用装饰控制显隐，颜色→fill，高度→rect height，并更新“高度”显示
-        function update_toe() {
-            if (!svgval_toe) return;
-            svgval_toe.setAttribute('visibility', deco_toe_switch && deco_toe_switch.checked ? 'visible' : 'hidden');
-            svgval_toe.setAttribute('fill', deco_toe_color ? deco_toe_color.value : '#ffffff');
-            const h = parseFloat(deco_toe_height && deco_toe_height.value) || 0;
-            svgval_toe.setAttribute('height', h);
-            if (disval_deco_toe_height) disval_deco_toe_height.textContent = Number(h).toFixed(1) + 'cm';
-        }
-        // 更新顶部条纹开关（总开关打开时，各条纹按自身 checkbox 显隐；总开关关闭时全部隐藏）
-        function update_strip_top_visibility() {
-            const masterOn = deco_strip_top_switch && deco_strip_top_switch.checked;
-            const pairs = [
-                [deco_strip_top_1_enable, svgval_strip_top_1],
-                [deco_strip_top_2_enable, svgval_strip_top_2],
-                [deco_strip_top_3_enable, svgval_strip_top_3],
-                [deco_strip_top_4_enable, svgval_strip_top_4]
-            ];
-            pairs.forEach(function (p) {
-                const checkbox = p[0], rect = p[1];
-                if (rect) rect.setAttribute('visibility', (masterOn && checkbox.checked) ? 'visible' : 'hidden');
-            });
-        }
-        // 整体位移：开启时只允许调条纹1偏移，2/3/4 与条纹1保持相对位置
-        function apply_strip_top_autopos() {
-            const on = deco_strip_top_autopos && deco_strip_top_autopos.checked;
-            deco_strip_top_2_offset.disabled = on;
-            deco_strip_top_3_offset.disabled = on;
-            deco_strip_top_4_offset.disabled = on;
-            if (on) {
-                const o1 = parseFloat(deco_strip_top_1_offset.value) || 0;
-                // 首次开启或尚未有相对差时，从当前值捕获
-                if (strip_top_offset_rel_2 === undefined) {
-                    strip_top_offset_rel_2 = (parseFloat(deco_strip_top_2_offset.value) || 0) - o1;
-                    strip_top_offset_rel_3 = (parseFloat(deco_strip_top_3_offset.value) || 0) - o1;
-                    strip_top_offset_rel_4 = (parseFloat(deco_strip_top_4_offset.value) || 0) - o1;
-                }
-                deco_strip_top_2_offset.value = o1 + strip_top_offset_rel_2;
-                deco_strip_top_3_offset.value = o1 + strip_top_offset_rel_3;
-                deco_strip_top_4_offset.value = o1 + strip_top_offset_rel_4;
-            } else {
-                strip_top_offset_rel_2 = strip_top_offset_rel_3 = strip_top_offset_rel_4 = undefined;
-            }
-        }
-        // 统一颜色：开启时禁用第2/3/4条纹颜色输入，并使其值与第1条纹一致
-        function apply_strip_top_autocolor() {
-            const on = deco_strip_top_autocolor && deco_strip_top_autocolor.checked;
-            deco_strip_top_2_color.disabled = on;
-            deco_strip_top_3_color.disabled = on;
-            deco_strip_top_4_color.disabled = on;
-            if (on) {
-                deco_strip_top_2_color.value = deco_strip_top_1_color.value;
-                deco_strip_top_3_color.value = deco_strip_top_1_color.value;
-                deco_strip_top_4_color.value = deco_strip_top_1_color.value;
-            }
-        }
-        // 统一宽度：开启时禁用第2/3/4条纹宽度输入，并使其值与第1条纹一致
-        function apply_strip_top_autoheight() {
-            const on = deco_strip_top_autoheight && deco_strip_top_autoheight.checked;
-            deco_strip_top_2_width.disabled = on;
-            deco_strip_top_3_width.disabled = on;
-            deco_strip_top_4_width.disabled = on;
-            if (on) {
-                deco_strip_top_2_width.value = deco_strip_top_1_width.value;
-                deco_strip_top_3_width.value = deco_strip_top_1_width.value;
-                deco_strip_top_4_width.value = deco_strip_top_1_width.value;
-            }
-        }
-        // 更新顶部条纹颜色（各条纹 fill 同步对应 color 输入）
-        function update_strip_top_color() {
-            const pairs = [
-                [deco_strip_top_1_color, svgval_strip_top_1],
-                [deco_strip_top_2_color, svgval_strip_top_2],
-                [deco_strip_top_3_color, svgval_strip_top_3],
-                [deco_strip_top_4_color, svgval_strip_top_4]
-            ];
-            pairs.forEach(function (p) {
-                const colorInput = p[0], rect = p[1];
-                if (colorInput && rect) rect.setAttribute('fill', colorInput.value);
-            });
-        }
-
-        // 更新顶部条纹宽度和偏移：y = tmpval_sox_length - offset + width，height = width
-        // 顶部条纹 y 与高度：y = sox_length - (偏移 + 宽度)，height = 宽度（由 sox_length=60 实验标定）
-        function update_strip_top_width_and_offset() {
-            const soxLen = parseFloat(sox_length.value) || 60;
-            const pairs = [
-                [deco_strip_top_1_offset, deco_strip_top_1_width, svgval_strip_top_1],
-                [deco_strip_top_2_offset, deco_strip_top_2_width, svgval_strip_top_2],
-                [deco_strip_top_3_offset, deco_strip_top_3_width, svgval_strip_top_3],
-                [deco_strip_top_4_offset, deco_strip_top_4_width, svgval_strip_top_4]
-            ];
-            pairs.forEach(function (p) {
-                const offsetInput = p[0], widthInput = p[1], rect = p[2];
-                if (!rect) return;
-                const offset = parseFloat(offsetInput.value) || 0;
-                const width = parseFloat(widthInput.value) || 0;
-                rect.setAttribute('y', soxLen - (offset + width));
-                rect.setAttribute('height', width);
-            });
-        }
-        // 脚印：拉取所选 SVG，内联 2 个图案到 stepContainer，中轴线分别 x=4、x=14，缩放以中心为锚点
-        const STEP_PAW_SIZE = 6;   // step_paw 源尺寸
-        const STEP_PAW_CENTER = STEP_PAW_SIZE / 2;  // 3，用于以中心为锚点缩放
-        const STEP_CENTER_X1 = 4;
-        const STEP_CENTER_X2 = 14;
-        function update_deco_step() {
-            if (!stepContainer) return;
-            while (stepContainer.firstChild) stepContainer.removeChild(stepContainer.firstChild);
-            if (!deco_step_switch || !deco_step_switch.checked) return;
-            const scale = parseFloat(deco_step_scale && deco_step_scale.value) || 0.6;
-            const offsetY = parseFloat(deco_step_offset_y && deco_step_offset_y.value) || 7;
-            const color = deco_step_color && deco_step_color.value ? deco_step_color.value : '#ffc0cb';
-            const fileName = 'sox/' + (deco_step_select && deco_step_select.value ? deco_step_select.value : 'step_paw.svg');
-            function setFill(el, fillColor) {
-                if (el.nodeType === 1) {
-                    if (el.tagName === 'path' || el.tagName === 'circle' || el.tagName === 'rect' || el.tagName === 'polygon') el.setAttribute('fill', fillColor);
-                    for (let j = 0; j < el.childNodes.length; j++) setFill(el.childNodes[j], fillColor);
-                }
-            }
-            function makeWrapper(centerX) {
-                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('transform', 'translate(' + centerX + ',' + offsetY + ') scale(' + scale + ') translate(' + (-STEP_PAW_CENTER) + ',' + (-STEP_PAW_CENTER) + ')');
-                return g;
-            }
-            fetch(fileName)
-                .then(function (r) { return r.text(); })
-                .then(function (svgText) {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(svgText, 'image/svg+xml');
-                    const root = doc.documentElement;
-                    if (!root || root.tagName !== 'svg') return;
-                    [STEP_CENTER_X1, STEP_CENTER_X2].forEach(function (centerX) {
-                        const wrapper = makeWrapper(centerX);
-                        for (let i = 0; i < root.childNodes.length; i++) {
-                            const node = root.childNodes[i];
-                            wrapper.appendChild(document.importNode(node, true));
-                        }
-                        setFill(wrapper, color);
-                        stepContainer.appendChild(wrapper);
-                    });
-                })
-                .catch(function (err) { console.error('脚印 SVG 加载失败:', fileName, err); });
-        }
-        // 条纹偏移范围：max = sox_length，并将当前值钳位到 [0, max]
-        function update_strip_offset_range() {
-            const maxOffset = parseFloat(sox_length.value) || 60;
-            const offsetInputs = [deco_strip_top_1_offset, deco_strip_top_2_offset, deco_strip_top_3_offset, deco_strip_top_4_offset];
-            offsetInputs.forEach(function (input) {
-                if (!input) return;
-                input.setAttribute('max', maxOffset);
-                const minVal = parseFloat(input.getAttribute('min')) || 0;
-                const val = parseFloat(input.value) || 0;
-                const clamped = Math.max(minVal, Math.min(maxOffset, val));
-                if (clamped !== val) input.value = clamped;
-            });
-        }
-        // 保存配置到JSON文件
-        saveBtn.addEventListener('click', function () {
-            const config = { // 结构体
-                conf_item_name: item_name.value, // 配置名
-                conf_sox_length: sox_length.value, // sox长度
-                conf_sox_model_panty: sox_model_panty.checked, // panty
-                conf_sox_model_tabi: sox_model_tabi.checked, // tabi
-                conf_color_single: color_single.value, // 纯色底色
-                // 底纹条纹
-                conf_bkg_strip_switch: bkg_strip_switch.checked,
-                conf_color_strip: color_strip.value,
-                conf_color_strip_width: color_strip_width.value,
-                // 尖色块
-                conf_deco_toe_switch: deco_toe_switch.checked,
-                conf_deco_toe_color: deco_toe_color.value,
-                conf_deco_toe_height: deco_toe_height.value,
-                // 顶部条纹
-                conf_deco_strip_top_switch: deco_strip_top_switch.checked,
-                conf_deco_strip_top_1_enable: deco_strip_top_1_enable.checked,
-                conf_deco_strip_top_2_enable: deco_strip_top_2_enable.checked,
-                conf_deco_strip_top_3_enable: deco_strip_top_3_enable.checked,
-                conf_deco_strip_top_4_enable: deco_strip_top_4_enable.checked,
-                conf_deco_strip_top_1_color: deco_strip_top_1_color.value,
-                conf_deco_strip_top_2_color: deco_strip_top_2_color.value,
-                conf_deco_strip_top_3_color: deco_strip_top_3_color.value,
-                conf_deco_strip_top_4_color: deco_strip_top_4_color.value,
-                conf_deco_strip_top_1_offset: deco_strip_top_1_offset.value,
-                conf_deco_strip_top_2_offset: deco_strip_top_2_offset.value,
-                conf_deco_strip_top_3_offset: deco_strip_top_3_offset.value,
-                conf_deco_strip_top_4_offset: deco_strip_top_4_offset.value,
-                conf_deco_strip_top_1_width: deco_strip_top_1_width.value,
-                conf_deco_strip_top_2_width: deco_strip_top_2_width.value,
-                conf_deco_strip_top_3_width: deco_strip_top_3_width.value,
-                conf_deco_strip_top_4_width: deco_strip_top_4_width.value,
-                // 脚印
-                conf_deco_step_switch: deco_step_switch.checked,
-                conf_deco_step_select: deco_step_select.value,
-                conf_deco_step_color: deco_step_color.value,
-                conf_deco_step_scale: deco_step_scale.value,
-                conf_deco_step_offset_y: deco_step_offset_y.value
-            };
-
-            const dataStr = JSON.stringify(config, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-            if (item_name.value == "") { item_name.value = "sox" }
-            const exportFileDefaultName = item_name.value + '.json';
-
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        });
-
-        // 从文件加载配置
-        loadBtn.addEventListener('click', function () {
-            fileInput.click();
-        });
-
-        // 文件输入变化事件
-        fileInput.addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                try {
-                    const config = JSON.parse(e.target.result);
-                    item_name.value = config.conf_item_name; // 配置名
-                    if (config.conf_sox_length) {
-                        sox_length.value = config.conf_sox_length; // sox长度
-                        update_sox_length();
-                    }
-                    sox_model_panty.checked = config.conf_sox_model_panty; // panty
-                    update_sox_model_panty();
-                    sox_model_tabi.checked = config.conf_sox_model_tabi; // panty
-                    update_sox_model_tabi();
-                    if (config.conf_color_single) {
-                        color_single.value = config.conf_color_single; // 纯色底色
-                        update_color_single();
-                    }
-                    // 底纹条纹
-                    if (config.conf_bkg_strip_switch !== undefined) bkg_strip_switch.checked = config.conf_bkg_strip_switch;
-                    if (config.conf_color_strip !== undefined) color_strip.value = config.conf_color_strip;
-                    if (config.conf_color_strip_width !== undefined) color_strip_width.value = config.conf_color_strip_width;
-                    update_bkg_strip();
-                    // 尖色块
-                    if (config.conf_deco_toe_switch !== undefined) deco_toe_switch.checked = config.conf_deco_toe_switch;
-                    if (config.conf_deco_toe_color !== undefined) deco_toe_color.value = config.conf_deco_toe_color;
-                    if (config.conf_deco_toe_height !== undefined) deco_toe_height.value = config.conf_deco_toe_height;
-                    update_toe();
-                    // 顶部条纹
-                    if (config.conf_deco_strip_top_switch !== undefined) deco_strip_top_switch.checked = config.conf_deco_strip_top_switch; // 顶部条纹总开关
-                    if (config.conf_deco_strip_top_1_enable !== undefined) deco_strip_top_1_enable.checked = config.conf_deco_strip_top_1_enable; // 顶部条纹1开关
-                    if (config.conf_deco_strip_top_2_enable !== undefined) deco_strip_top_2_enable.checked = config.conf_deco_strip_top_2_enable; // 顶部条纹2开关
-                    if (config.conf_deco_strip_top_3_enable !== undefined) deco_strip_top_3_enable.checked = config.conf_deco_strip_top_3_enable; // 顶部条纹3开关
-                    if (config.conf_deco_strip_top_4_enable !== undefined) deco_strip_top_4_enable.checked = config.conf_deco_strip_top_4_enable; // 顶部条纹4开关
-                    if (config.conf_deco_strip_top_1_color !== undefined) deco_strip_top_1_color.value = config.conf_deco_strip_top_1_color; // 顶部条纹1颜色
-                    if (config.conf_deco_strip_top_2_color !== undefined) deco_strip_top_2_color.value = config.conf_deco_strip_top_2_color; // 顶部条纹2颜色
-                    if (config.conf_deco_strip_top_3_color !== undefined) deco_strip_top_3_color.value = config.conf_deco_strip_top_3_color; // 顶部条纹3颜色
-                    if (config.conf_deco_strip_top_4_color !== undefined) deco_strip_top_4_color.value = config.conf_deco_strip_top_4_color; // 顶部条纹4颜色
-                    if (config.conf_deco_strip_top_1_offset !== undefined) deco_strip_top_1_offset.value = config.conf_deco_strip_top_1_offset; // 顶部条纹1偏移
-                    if (config.conf_deco_strip_top_2_offset !== undefined) deco_strip_top_2_offset.value = config.conf_deco_strip_top_2_offset; // 顶部条纹2偏移
-                    if (config.conf_deco_strip_top_3_offset !== undefined) deco_strip_top_3_offset.value = config.conf_deco_strip_top_3_offset; // 顶部条纹3偏移
-                    if (config.conf_deco_strip_top_4_offset !== undefined) deco_strip_top_4_offset.value = config.conf_deco_strip_top_4_offset; // 顶部条纹4偏移
-                    if (config.conf_deco_strip_top_1_width !== undefined) deco_strip_top_1_width.value = config.conf_deco_strip_top_1_width; // 顶部条纹1宽度
-                    if (config.conf_deco_strip_top_2_width !== undefined) deco_strip_top_2_width.value = config.conf_deco_strip_top_2_width; // 顶部条纹2宽度
-                    if (config.conf_deco_strip_top_3_width !== undefined) deco_strip_top_3_width.value = config.conf_deco_strip_top_3_width; // 顶部条纹3宽度
-                    if (config.conf_deco_strip_top_4_width !== undefined) deco_strip_top_4_width.value = config.conf_deco_strip_top_4_width; // 顶部条纹4宽度
-                    update_strip_offset_range();
-                    update_strip_top_visibility();
-                    update_strip_top_color();
-                    update_strip_top_width_and_offset();
-                    // 脚印
-                    if (config.conf_deco_step_switch !== undefined) deco_step_switch.checked = config.conf_deco_step_switch;
-                    if (config.conf_deco_step_select !== undefined) deco_step_select.value = config.conf_deco_step_select;
-                    if (config.conf_deco_step_color !== undefined) deco_step_color.value = config.conf_deco_step_color;
-                    if (config.conf_deco_step_scale !== undefined) {
-                        deco_step_scale.value = config.conf_deco_step_scale;
-                        if (disval_deco_step_scale) disval_deco_step_scale.textContent = Number(deco_step_scale.value).toFixed(1);
-                    }
-                    if (config.conf_deco_step_offset_y !== undefined) {
-                        deco_step_offset_y.value = config.conf_deco_step_offset_y;
-                        if (disval_deco_step_offset_y) disval_deco_step_offset_y.textContent = Number(deco_step_offset_y.value).toFixed(1);
-                    }
-                    update_deco_step();
-                } catch (error) {
-                    console.error('读取配置文件失败:', error);
-                    alert('配置文件格式错误！');
-                }
-            };
-            reader.readAsText(file);
-        });
-
-        // 重置
-        resetBtn.addEventListener('click', function () {
-            item_name.value = ''; // 配置名
-            update_item_name();
-            sox_length.value = 60; // sox长度
-            update_sox_length();
-            sox_model_panty.checked = false; // panty
-            update_sox_model_panty();
-            sox_model_tabi.checked = false; // tabi
-            update_sox_model_tabi();
-            color_single.value = '#ffffff'; // 纯色底色
-            update_color_single();
-            // 底纹条纹
-            bkg_strip_switch.checked = false;
-            color_strip.value = '#000000';
-            color_strip_width.value = '5';
-            update_bkg_strip();
-            // 尖色块
-            deco_toe_switch.checked = false;
-            deco_toe_color.value = '#000000';
-            deco_toe_height.value = '2';
-            update_toe();
-            // 顶部条纹
-            deco_strip_top_switch.checked = false; // 顶部条纹总开关
-            deco_strip_top_1_enable.checked = true; // 顶部条纹1开关
-            deco_strip_top_2_enable.checked = true; // 顶部条纹2开关
-            deco_strip_top_3_enable.checked = true; // 顶部条纹3开关
-            deco_strip_top_4_enable.checked = false; // 顶部条纹4开关
-            deco_strip_top_1_color.value = '#000000'; // 顶部条纹1颜色
-            deco_strip_top_2_color.value = '#000000'; // 顶部条纹2颜色
-            deco_strip_top_3_color.value = '#000000'; // 顶部条纹3颜色
-            deco_strip_top_4_color.value = '#000000'; // 顶部条纹4颜色
-            deco_strip_top_1_offset.value = '4'; // 顶部条纹1偏移
-            deco_strip_top_2_offset.value = '6'; // 顶部条纹2偏移
-            deco_strip_top_3_offset.value = '8'; // 顶部条纹3偏移
-            deco_strip_top_4_offset.value = '10'; // 顶部条纹4偏移
-            deco_strip_top_1_width.value = '1'; // 顶部条纹1宽度
-            deco_strip_top_2_width.value = '1'; // 顶部条纹2宽度
-            deco_strip_top_3_width.value = '1'; // 顶部条纹3宽度
-            deco_strip_top_4_width.value = '1'; // 顶部条纹4宽度
-            // 顶部条纹
-            update_strip_top_visibility();
-            update_strip_top_color();
-            update_strip_top_width_and_offset();
-            // 脚印
-            deco_step_switch.checked = false;
-            deco_step_select.value = 'step_paw.svg';
-            deco_step_color.value = '#ffc0cb';
-            deco_step_scale.value = '0.6';
-            deco_step_offset_y.value = '7';
-            if (disval_deco_step_scale) disval_deco_step_scale.textContent = '0.6';
-            if (disval_deco_step_offset_y) disval_deco_step_offset_y.textContent = '7';
-            update_deco_step();
-        });
-
-        // 保存SVG
-        // 保存SVG到文件
-        const saveSvgBtn = document.getElementById('saveSvgBtn');
-        saveSvgBtn.addEventListener('click', function () {
-            // 获取SVG元素的XML字符串
-            const svgData = new XMLSerializer().serializeToString(document.getElementById('svgDisplay'));
-            // 创建Blob对象
-            const blob = new Blob([svgData], { type: "image/svg+xml" });
-            // 创建下载链接
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            if (item_name.value == "") { item_name.value = "sox" }
-            link.download = item_name.value + ".svg";
-            // 触发下载
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            // 释放URL对象
-            URL.revokeObjectURL(url);
-        });
-    </script>
+    <!-- sox 设计页脚本：按逻辑拆分为 update / listen / file，同目录引入，顺序不可变 -->
+    <script src="sox-js-update.js"></script>
+    <script src="sox-js-listen.js"></script>
+    <script src="sox-js-file.js"></script>
 </body>
 
 </html>
