@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mode 2</title>
+    <!-- 引入 Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        .triangle-container {
+            text-align: center;
+            margin-top: 50px;
+            position: relative;
+        }
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid #007bff;
+            margin: 0 auto;
+            transition: transform 0.1s ease; /* 平滑过渡 */
+        }
+        .control-panel {
+            margin-top: 30px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <h2 class="mb-4">Mode 2 - 三角形控制</h2>
+
+    <!-- 控制面板 (左上部分) -->
+    <div class="row control-panel">
+        <div class="col-md-6">
+            <div class="control-group">
+                <label for="sizeSlider" class="form-label">大小:</label>
+                <input type="range" class="form-range" id="sizeSlider" min="20" max="200" value="100">
+                <span id="sizeValue">100px</span>
+            </div>
+            <div class="control-group">
+                <label for="speedSlider" class="form-label">旋转速度:</label>
+                <input type="range" class="form-range" id="speedSlider" min="0" max="10" step="0.1" value="1">
+                <span id="speedValue">1.0x</span>
+            </div>
+            <div class="control-group">
+                <label for="directionSelect" class="form-label">旋转方向:</label>
+                <select class="form-select" id="directionSelect">
+                    <option value="clockwise">顺时针</option>
+                    <option value="counterClockwise">逆时针</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 显示区域 (右半部分) -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="triangle-container">
+                <div id="triangle" class="triangle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sizeSlider = document.getElementById('sizeSlider');
+    const sizeValue = document.getElementById('sizeValue');
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValue = document.getElementById('speedValue');
+    const directionSelect = document.getElementById('directionSelect');
+    const triangle = document.getElementById('triangle');
+
+    let rotationAngle = 0;
+    let animationId = null;
+    let isRotating = true;
+
+    // 更新三角形大小
+    function updateTriangleSize(size) {
+        // 调整边框宽度和高度来改变三角形大小
+        triangle.style.borderLeftWidth = (size / 2) + 'px';
+        triangle.style.borderRightWidth = (size / 2) + 'px';
+        triangle.style.borderBottomWidth = size + 'px';
+        sizeValue.textContent = size + 'px';
+    }
+
+    // 更新旋转速度
+    function updateRotationSpeed(speed) {
+        speedValue.textContent = speed.toFixed(1) + 'x';
+        // 这里可以调整动画的帧率或间隔，但更简单的是用 CSS 的 animation-duration
+        // 但这需要重新计算 CSS 动画关键帧
+        // 简化处理：直接更新 CSS 动画
+        const direction = directionSelect.value === 'clockwise' ? '' : '-';
+        triangle.style.animation = `rotate ${1 / speed}s linear infinite`;
+        triangle.style.setProperty('--rotation-direction', direction);
+    }
+
+    // 更新旋转方向
+    function updateDirection(direction) {
+        const speed = parseFloat(speedSlider.value);
+        const directionClass = direction === 'clockwise' ? '' : 'counter-clockwise';
+        // 移除旧类
+        triangle.classList.remove('counter-clockwise');
+        // 添加新类
+        if (direction === 'counterClockwise') {
+            triangle.classList.add('counter-clockwise');
+        }
+        // 重新设置动画以应用新的方向
+        triangle.style.animation = `rotate ${1 / speed}s linear infinite`;
+    }
+
+    // 初始化
+    updateTriangleSize(parseInt(sizeSlider.value));
+    updateRotationSpeed(parseFloat(speedSlider.value));
+
+    // 监听大小滑块
+    sizeSlider.addEventListener('input', function() {
+        updateTriangleSize(parseInt(this.value));
+    });
+
+    // 监听速度滑块
+    speedSlider.addEventListener('input', function() {
+        updateRotationSpeed(parseFloat(this.value));
+    });
+
+    // 监听方向选择
+    directionSelect.addEventListener('change', function() {
+        updateDirection(this.value);
+    });
+
+    // 添加 CSS 动画规则
+    const styleSheet = document.createElement('style');
+    styleSheet.innerHTML = `
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .counter-clockwise {
+            animation-direction: reverse;
+        }
+    `;
+    document.head.appendChild(styleSheet);
+
+    // 注意：上面的动画方向切换逻辑在实际应用中可能需要更复杂的处理。
+    // 如果你发现方向不工作，可以考虑使用 JavaScript 动画循环 (requestAnimationFrame) 来精确控制旋转方向和速度。
+    // 以下是一个简单的基于 requestAnimationFrame 的替代方案（更可靠）:
+
+    // 使用 requestAnimationFrame 实现更精确的控制
+    function animateTriangle() {
+        if (!isRotating) return;
+
+        const speed = parseFloat(speedSlider.value);
+        const direction = directionSelect.value === 'clockwise' ? 1 : -1;
+        rotationAngle += 0.1 * speed * direction; // 每帧增加角度
+        triangle.style.transform = `rotate(${rotationAngle}deg)`;
+
+        animationId = requestAnimationFrame(animateTriangle);
+    }
+
+    // 启动动画
+    animateTriangle();
+
+    // 为速度和方向更改时重新启动动画
+    speedSlider.addEventListener('input', () => {
+        if (animationId) cancelAnimationFrame(animationId);
+        animateTriangle();
+    });
+    directionSelect.addEventListener('change', () => {
+        if (animationId) cancelAnimationFrame(animationId);
+        animateTriangle();
+    });
+
+</script>
+
+</body>
+</html>

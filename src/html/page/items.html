@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <title>Items</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        /* 可选：添加一些自定义样式 */
+        body {
+            padding: 20px;
+        }
+
+        .main-container {
+            min-height: 100vh;
+            /* 确保容器至少占满视口高度 */
+        }
+
+        .iframe-container {
+            border: 1px solid #ccc;
+            height: calc(100vh - 40px);
+            /* 减去 body 的 padding 和可能的其他元素 */
+            overflow: hidden;
+            /* 防止 iframe 内部滚动条 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <!--# include virtual="/innerHTML/nav.html" -->
+    <div class="container-fluid main-container">
+        <h1 class="mb-4">动态控制面板</h1>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <label for="modeSelect" class="form-label">选择模式:</label>
+                <select id="modeSelect" class="form-select">
+                    <option value="">-- 请选择 --</option>
+                    <option value="mode1.html">Mode 1</option>
+                    <option value="mode2.html">Mode 2</option>
+                    <option value="sox.html">SOX</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="iframe-container">
+                    <iframe id="contentFrame" src="https://ie.icoa.cn/" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('modeSelect').addEventListener('change', function () {
+            const selectedValue = "items/" + this.value;
+            const frame = document.getElementById('contentFrame');
+            if (selectedValue) {
+                frame.src = selectedValue;
+            } else {
+                frame.src = ''; // 清空
+            }
+        });
+    </script>
+</body>
+
+</html>
