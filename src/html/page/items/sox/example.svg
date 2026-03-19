@@ -1,0 +1,311 @@
+<svg width="50" height="150" xmlns="http://www.w3.org/2000/svg" transform="rotate(180, 0, 0)">
+    <defs>
+        <!-- stok遮罩形状 -->
+        <mask height="50" width="100" y="0" x="0" id="stok">
+            <!-- 透明基底 -->
+            <rect id="trans" class="maskS" fill="black" height="80" width="100" y="0" x="0"/>
+            <!-- 左后stok -->
+            <rect id="rectBL" class="maskB" fill="white" height="60" width="8" y="4" x="10"/>
+            <circle id="cirBL" class="maskS" fill="white" r="4" cy="4" cx="14"/>
+            <!-- 右后stok -->
+            <rect id="rectBR" class="maskB" fill="white" height="60" width="8" y="4" x="0"/>
+            <circle id="cirBR" class="maskS" fill="white" r="4" cy="4" cx="4"/>
+            <!-- 右前stok -->
+            <rect id="rectFR" class="maskB" fill="white" height="60" width="8" y="4" x="40"/>
+            <circle id="cirFR" class="maskS" fill="white" r="4" cy="4" cx="44"/>
+            <!-- 左前stok -->
+            <rect id="rectFL" class="maskB" fill="white" height="60" width="8" y="4" x="30"/>
+            <circle id="cirFL" class="maskS" fill="white" r="4" cy="4" cx="34"/>
+            <!-- 前panty -->
+            <rect id="ptcloF" class="maskP" fill="white" height="20" width="18" y="64" x="30" visibility="hidden"/>
+            <!-- 后panty -->
+            <rect id="ptcloB" class="maskP" fill="white" height="20" width="18" y="64" x="0" visibility="hidden"/>
+            <!-- 前tabi -->
+            <rect id="tabiFL" class="maskT" fill="black" height="2" width="0.4" y="0" x="33.8" visibility="hidden"/>
+            <rect id="tabiFR" class="maskT" fill="black" height="2" width="0.4" y="0" x="43.8" visibility="hidden"/>
+            <!-- 后tabi -->
+            <rect id="tabiBL" class="maskT" fill="black" height="2" width="0.4" y="0" x="3.8" visibility="hidden"/>
+            <rect id="tabiBR" class="maskT" fill="black" height="2" width="0.4" y="0" x="13.8" visibility="hidden"/>
+            <!-- 破损 -->
+            <circle id="maskBrokenHoleB0" class="maskX broken" fill="black" r="1.5" cy="038" cx="07" visibility="hidden"/>
+            <circle id="maskBrokenHoleB1" class="maskX broken" fill="black" r="1.7" cy="008" cx="09" visibility="hidden"/>
+            <circle id="maskBrokenHoleB2" class="maskX broken" fill="black" r="2.1" cy="072" cx="13" visibility="hidden"/>
+            <circle id="maskBrokenHoleB3" class="maskX broken" fill="black" r="0.2" cy="071" cx="11" visibility="hidden"/>
+            <circle id="maskBrokenHoleB4" class="maskX broken" fill="black" r="1.2" cy="009" cx="03" visibility="hidden"/> <!-- cy -100 -->
+            <circle id="maskBrokenHoleB5" class="maskX broken" fill="black" r="2.4" cy="029" cx="16" visibility="hidden"/>
+            <circle id="maskBrokenHoleB6" class="maskX broken" fill="black" r="2.0" cy="015" cx="02" visibility="hidden"/>
+            <circle id="maskBrokenHoleB7" class="maskX broken" fill="black" r="1.9" cy="042" cx="04" visibility="hidden"/> <!-- cy -100 -->
+            <circle id="maskBrokenHoleB8" class="maskX broken" fill="black" r="1.4" cy="096" cx="00" visibility="hidden"/>
+            <circle id="maskBrokenHoleB9" class="maskX broken" fill="black" r="0.7" cy="081" cx="19" visibility="hidden"/>
+            <circle id="maskBrokenHoleBA" class="maskX broken" fill="black" r="1.3" cy="033" cx="02" visibility="hidden"/>
+            <circle id="maskBrokenHoleBB" class="maskX broken" fill="black" r="2.6" cy="087" cx="14" visibility="hidden"/>
+            <circle id="maskBrokenHoleBC" class="maskX broken" fill="black" r="1.8" cy="053" cx="05" visibility="hidden"/>
+            <circle id="maskBrokenHoleBD" class="maskX broken" fill="black" r="0.9" cy="045" cx="16" visibility="hidden"/> <!-- cy -100 -->
+            <circle id="maskBrokenHoleBE" class="maskX broken" fill="black" r="1.9" cy="006" cx="11" visibility="hidden"/> <!-- cy -100 r -1 -->
+            <circle id="maskBrokenHoleBF" class="maskX broken" fill="black" r="0.3" cy="094" cx="03" visibility="hidden"/>
+
+            <circle id="maskBrokenHoleF0" class="maskX broken" fill="black" r="1.5" cy="038" cx="33" visibility="hidden"/>
+            <circle id="maskBrokenHoleF1" class="maskX broken" fill="black" r="1.7" cy="008" cx="45" visibility="hidden"/>
+            <circle id="maskBrokenHoleF2" class="maskX broken" fill="black" r="2.1" cy="072" cx="43" visibility="hidden"/>
+            <circle id="maskBrokenHoleF3" class="maskX broken" fill="black" r="0.2" cy="071" cx="44" visibility="hidden"/>
+            <circle id="maskBrokenHoleF4" class="maskX broken" fill="black" r="1.2" cy="009" cx="34" visibility="hidden"/> <!-- cy -100 -->
+            <circle id="maskBrokenHoleF5" class="maskX broken" fill="black" r="2.4" cy="029" cx="46" visibility="hidden"/>
+            <circle id="maskBrokenHoleF6" class="maskX broken" fill="black" r="2.0" cy="015" cx="36" visibility="hidden"/>
+            <circle id="maskBrokenHoleF7" class="maskX broken" fill="black" r="1.9" cy="042" cx="30" visibility="hidden"/> <!-- cy -100 -->
+            <circle id="maskBrokenHoleF8" class="maskX broken" fill="black" r="1.4" cy="096" cx="49" visibility="hidden"/>
+            <circle id="maskBrokenHoleF9" class="maskX broken" fill="black" r="0.7" cy="081" cx="43" visibility="hidden"/>
+            <circle id="maskBrokenHoleFA" class="maskX broken" fill="black" r="1.3" cy="033" cx="30" visibility="hidden"/>
+            <circle id="maskBrokenHoleFB" class="maskX broken" fill="black" r="2.6" cy="087" cx="45" visibility="hidden"/>
+            <circle id="maskBrokenHoleFC" class="maskX broken" fill="black" r="1.8" cy="053" cx="31" visibility="hidden"/>
+            <circle id="maskBrokenHoleFD" class="maskX broken" fill="black" r="0.9" cy="045" cx="47" visibility="hidden"/> <!-- cy -100 -->
+            <circle id="maskBrokenHoleFE" class="maskX broken" fill="black" r="1.9" cy="006" cx="41" visibility="hidden"/> <!-- cy -100 r -1 -->
+            <circle id="maskBrokenHoleFF" class="maskX broken" fill="black" r="0.3" cy="094" cx="46" visibility="hidden"/>
+            <path id="copy" fill="black" stroke="null" visibility="hidden" d="m2,2.5a0.5,0.5 0 0 1 0.5,-0.5l2,0a0.5,0.5 0 0 1 0.5,0.5l0,0.5l0.5,0a0.5,0.5 0 0 1 0.5,0.5l0,2a0.5,0.5 0 0 1 -0.5,0.5l-2,0a0.5,0.5 0 0 1 -0.5,-0.5l0,-0.5l-0.5,0a0.5,0.5 0 0 1 -0.5,-0.5l0,-2zm0.5,-0.25a0.25,0.25 0 0 0 -0.25,0.25l0,2a0.25,0.25 0 0 0 0.25,0.25l2,0a0.25,0.25 0 0 0 0.25,-0.25l0,-2a0.25,0.25 0 0 0 -0.25,-0.25l-2,0z"/>
+        </mask>
+    </defs>
+    <!-- 本体 -->
+    <g>
+        <title>底色</title>
+        <!-- 纯色底色 -->
+        <!-- fill   : @base_color -->
+        <rect id="bkgSingleColor" class="sox bkg single" mask="url(#stok)" fill="white" height="150" width="100" y="0" x="0" visibility="visible"/>
+        <!-- 渐变 -->
+        <rect id="bkgGradColor" class="sox bkg grad" mask="url(#stok)" fill="white" height="150" width="100" y="0" x="0" visibility="hidden"/>
+        <!-- 柏林纹理 -->
+        <image id="bkgBerinColor" class="sox bkg berin" mask="url(#stok)" href="berin-mpr34fkyas.png" height="150" width="150" visibility="hidden"/>
+
+    </g>
+    <g>
+        <title>纹理</title>
+        <!-- 根辅助线 -->
+        <rect id="auxLineRoot" class="aux" mask="url(#stok)" fill="#FF00FF" height="0.1" width="100" y="20" x="0" visibility="hidde"/>
+        <!-- 顶部条纹 -->
+        <rect id="stripT1" class="sox stripT" mask="url(#stok)" fill="black" height="1" width="100" y="60" x="0" visibility="visible"/>
+        <rect id="stripT2" class="sox stripT" mask="url(#stok)" fill="black" height="1" width="100" y="58" x="0" visibility="visible"/>
+        <rect id="stripT3" class="sox stripT" mask="url(#stok)" fill="black" height="1" width="100" y="56" x="0" visibility="visible"/>
+        <rect id="stripT4" class="sox stripT" mask="url(#stok)" fill="black" height="1" width="100" y="54" x="0" visibility="hidden"/>
+        <!-- 尖 -->
+        <rect id="toe" class="sox stripT" mask="url(#stok)" fill="black" height="3" width="100" y="0" x="0" visibility="hidden"/>
+    </g>
+    <g>
+        <title>图案</title>
+        <!-- V -->
+        <text
+            class="text-VB"
+            x="-4"
+            y="-20"
+            font-family="Gill Sans"
+            font-size="10"
+            fill="black"
+            text-anchor="middle"
+            transform="rotate(180)"
+            visibility="hidden"
+        >
+            V
+        </text>
+        <text
+            class="text-VB"
+            x="-14"
+            y="-20"
+            font-family="Gill Sans"
+            font-size="10"
+            fill="black"
+            text-anchor="middle"
+            transform="rotate(180)"
+            visibility="hidden"
+        >
+            V
+        </text>
+    </g>
+    <g>
+        <title>文字</title>
+        <!-- 文字 - 前对角LR -->
+        <text
+            class="text-lrF"
+            mask="url(#stok)"
+            x="37"
+            y="6"
+            font-family="Georgia, serif"
+            font-size="2"
+            fill="black"
+            text-anchor="middle"
+            visibility="hidden"
+        >
+            L
+        </text>
+        <text
+            class="text-lrF"
+            mask="url(#stok)"
+            x="41"
+            y="6"
+            font-family="Georgia, serif"
+            font-size="2"
+            fill="black"
+            text-anchor="middle"
+            visibility="hidden"
+        >
+            R
+        </text>
+        <!-- 文字 - 底LR -->
+        <text
+            class="text-lrlB"
+            mask="url(#stok)"
+            x="14"
+            y="12"
+            font-family="Georgia, serif"
+            font-size="10"
+            fill="black"
+            text-anchor="middle"
+            visibility="hidden"
+        >
+            L
+        </text>
+        <text
+            class="text-lrlB"
+            mask="url(#stok)"
+            x="4"
+            y="12"
+            font-family="Georgia, serif"
+            font-size="10"
+            fill="black"
+            text-anchor="middle"
+            visibility="hidden"
+        >
+            R
+        </text>
+        <!-- 文字 - 前尖 -->
+        <text
+            class="text-toeF"
+            mask="url(#stok)"
+            x="34"
+            y="6"
+            font-family="Georgia, serif"
+            font-size="2"
+            fill="black"
+            text-anchor="middle"
+            visibility="hidden"
+        >
+            TEXT-L
+        </text>
+        <text
+            class="text-toeF"
+            mask="url(#stok)"
+            x="44"
+            y="6"
+            font-family="Georgia, serif"
+            font-size="2"
+            fill="black"
+            text-anchor="middle"
+            visibility="hidden"
+        >
+            TEXT-R
+        </text>
+        <!-- 文字 - 后竖写 -->
+        <text
+            class="text-eliteB"
+            x="-20"
+            y="15.5"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-L
+        </text>
+        <text
+            class="text-eliteB"
+            x="-20"
+            y="5.5"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-R
+        </text>
+        <!-- 文字 - 内竖写 -->
+        <text
+            class="text-eliteI-del"
+            x="-20"
+            y="12"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-IBL
+        </text>
+        <text
+            class="text-eliteI"
+            x="-20"
+            y="39"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-IL
+        </text>
+        <text
+            class="text-eliteI"
+            x="-20"
+            y="9"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-IR
+        </text>
+        <text
+            class="text-eliteI-del"
+            x="-20"
+            y="42"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-IFR
+        </text>
+        <!-- 文字 - 外竖写 -->
+        <text
+            class="text-eliteO"
+            x="-20"
+            y="19"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-OL
+        </text>
+        <text
+            class="text-eliteO"
+            x="-20"
+            y="49"
+            font-family="Georgia, serif"
+            font-size="4"
+            fill="black"
+            text-anchor="end"
+            transform="rotate(-90)"
+            visibility="hidden"
+        >
+            TEXT-OR
+        </text>
+    </g>
+</svg>
