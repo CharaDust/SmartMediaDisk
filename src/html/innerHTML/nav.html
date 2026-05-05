@@ -1,28 +1,19 @@
-<!-- 导航栏 -->
-
 <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-        <!-- 导航栏标题 -->
         <a class="navbar-brand" href="/index.html">Media Cube</a>
 
-        <!-- 折叠按钮 -->
-        <ul class="navbar-nav">
-            <li>
-                <span class="navbar-text">Menu</span>
-                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </li>
-        </ul>
-
+        <div class="d-flex align-items-center gap-2">
+            <span class="navbar-text small d-none" data-auth-username></span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="打开导航">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
 
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
-                <!-- 折叠导航栏标题 -->
                 <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Media Cube</h5>
-                <!-- 关闭按钮 -->
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="关闭"></button>
             </div>
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
@@ -35,7 +26,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            快照功能
+                            快速功能
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/test/ssi.html">SSI 测试</a></li>
@@ -43,18 +34,22 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="/page/initial.html">原初测试</a></li>
+                            <li><a class="dropdown-item" href="/page/initial.html">原始测试</a></li>
                             <li><a class="dropdown-item" href="/page/bootstrap.html">栅格测试</a></li>
                             <li><a class="dropdown-item" href="/page/form.html">表单测试</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            
                             <li><a class="dropdown-item" href="/page/items.html">动态表单测试</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/sign.html">登入</a>
+                    <li class="nav-item" data-auth-guest>
+                        <a class="nav-link" href="/sign.html">登录</a>
+                    </li>
+                    <li class="nav-item d-none" data-auth-user>
+                        <button class="btn btn-link nav-link text-start" type="button" data-auth-logout>
+                            退出登录
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -62,3 +57,4 @@
     </div>
 </nav>
 <div class="container" style="height: 56px;"></div>
+<script src="/js/auth.js" defer></script>

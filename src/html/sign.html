@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
-    <title>登录</title>
+    <title>登录 - Media Cube</title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
-    <!-- 导航栏（如需使用请打开注释） -->
     <!--# include virtual="/innerHTML/nav.html" -->
     <main class="container py-5">
         <div class="row justify-content-center">
@@ -19,37 +20,51 @@
                         <h1 class="h4 text-center mb-4">账号登录</h1>
                         <ul class="nav nav-tabs mb-4" id="signTabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="password-tab" data-bs-toggle="tab" data-bs-target="#password-pane" type="button" role="tab" aria-controls="password-pane" aria-selected="true">密码登录</button>
+                                <button class="nav-link active" id="password-tab" data-bs-toggle="tab"
+                                    data-bs-target="#password-pane" type="button" role="tab"
+                                    aria-controls="password-pane" aria-selected="true">
+                                    密码登录
+                                </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="lan-tab" data-bs-toggle="tab" data-bs-target="#lan-pane" type="button" role="tab" aria-controls="lan-pane" aria-selected="false">局域网设备登录</button>
+                                <button class="nav-link" id="lan-tab" data-bs-toggle="tab"
+                                    data-bs-target="#lan-pane" type="button" role="tab" aria-controls="lan-pane"
+                                    aria-selected="false">
+                                    局域网设备登录
+                                </button>
                             </li>
                         </ul>
                         <div class="tab-content" id="signTabsContent">
-                            <div class="tab-pane fade show active" id="password-pane" role="tabpanel" aria-labelledby="password-tab" tabindex="0">
-                                <form id="passwordSignForm">
+                            <div class="tab-pane fade show active" id="password-pane" role="tabpanel"
+                                aria-labelledby="password-tab" tabindex="0">
+                                <form id="passwordSignForm" novalidate>
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">用户名 / 邮箱</label>
-                                        <input type="text" class="form-control" id="username" placeholder="请输入用户名或邮箱" required>
+                                        <label for="username" class="form-label">用户名</label>
+                                        <input type="text" class="form-control" id="username" autocomplete="username"
+                                            placeholder="请输入用户名" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="password" class="form-label">密码</label>
-                                        <input type="password" class="form-control" id="password" placeholder="请输入密码" required>
+                                        <input type="password" class="form-control" id="password"
+                                            autocomplete="current-password" placeholder="请输入密码" required>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="rememberMe">
                                             <label class="form-check-label" for="rememberMe">记住我</label>
                                         </div>
-                                        <a href="#" class="link-primary text-decoration-none">忘记密码？</a>
+                                        <span class="text-muted small">默认账号 root / 123456；user / 123456</span>
                                     </div>
                                     <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary" id="passwordSignSubmit">登录</button>
+                                        <button type="submit" class="btn btn-primary" id="passwordSignSubmit">
+                                            登录
+                                        </button>
                                     </div>
-                                    <div id="passwordSignMessage" class="form-text mt-3"></div>
+                                    <div id="passwordSignMessage" class="form-text mt-3" role="status"></div>
                                 </form>
                             </div>
-                            <div class="tab-pane fade" id="lan-pane" role="tabpanel" aria-labelledby="lan-tab" tabindex="0">
+                            <div class="tab-pane fade" id="lan-pane" role="tabpanel" aria-labelledby="lan-tab"
+                                tabindex="0">
                                 <p class="text-muted mb-0">局域网设备登录功能暂未实现。</p>
                             </div>
                         </div>
@@ -63,40 +78,54 @@
         const passwordSignSubmit = document.getElementById('passwordSignSubmit');
         const passwordSignMessage = document.getElementById('passwordSignMessage');
 
+        function setMessage(message, state = 'muted') {
+            passwordSignMessage.className = `form-text mt-3 text-${state}`;
+            passwordSignMessage.textContent = message;
+        }
+
         passwordSignForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+
+            if (!passwordSignForm.checkValidity()) {
+                passwordSignForm.classList.add('was-validated');
+                setMessage('请填写用户名和密码。', 'danger');
+                return;
+            }
 
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
 
             passwordSignSubmit.disabled = true;
-            passwordSignMessage.className = 'form-text mt-3 text-muted';
-            passwordSignMessage.textContent = '登录中...';
+            setMessage('正在登录...', 'muted');
 
             try {
                 const response = await fetch('/api/signin/', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ username, password, rememberMe })
                 });
-
                 const result = await response.json();
+
                 if (!response.ok) {
                     throw new Error(result.message || '登录失败，请稍后重试。');
                 }
 
-                passwordSignMessage.className = 'form-text mt-3 text-success';
-                passwordSignMessage.textContent = result.message || '登录成功。';
+                localStorage.setItem('smartMediaDiskUser', JSON.stringify(result.data.user));
+                setMessage('登录成功，正在进入首页...', 'success');
+                window.setTimeout(() => {
+                    window.location.assign('/index.html');
+                }, 500);
             } catch (error) {
-                passwordSignMessage.className = 'form-text mt-3 text-danger';
-                passwordSignMessage.textContent = error.message;
+                setMessage(error.message, 'danger');
             } finally {
                 passwordSignSubmit.disabled = false;
             }
         });
     </script>
 </body>
+
 </html>
