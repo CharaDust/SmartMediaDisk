@@ -18,6 +18,7 @@ services:
       - static_volume:/app/staticfiles
     environment:
       - DEBUG=1
+      - SMARTMEDIADISK_SQLITE_PATH=/app/db/db.sqlite3
 
   # nginx开发环境服务
   nginx-dev:

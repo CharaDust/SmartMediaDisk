@@ -8,6 +8,7 @@ set "REMOTE_APP=SmartMediaDisk"
 set "REMOTE_DIR=%REMOTE_BASE%/%REMOTE_APP%"
 set "REMOTE_OLD=%REMOTE_BASE%/%REMOTE_APP%_old"
 set "REMOTE_ARCHIVE=/tmp/smartmediadisk_upload.tar.gz"
+set "REMOTE_DB_REL=src/django/db.sqlite3"
 
 for %%I in ("%~dp0..") do set "PROJECT_ROOT=%%~fI"
 
@@ -65,27 +66,40 @@ echo [INFO] Remote host: %SSH_TARGET%
 echo [INFO] Remote path: %REMOTE_DIR%
 echo.
 
-echo [1/5] Stop remote containers and backup old code...
+echo [1/6] Stop remote containers and backup old code...
 ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "cd %REMOTE_DIR% 2>/dev/null && (docker compose down || docker-compose down || true); mkdir -p %REMOTE_BASE%; if [ -e %REMOTE_OLD% ]; then mv %REMOTE_OLD% %REMOTE_OLD%_$(date +%%s); fi; if [ -e %REMOTE_DIR% ]; then mv %REMOTE_DIR% %REMOTE_OLD%; fi; mkdir -p %REMOTE_DIR%"
 if errorlevel 1 goto fail
 
 echo.
-echo [2/5] Package local project...
-tar --exclude=.git --exclude=.obsidian --exclude=env --exclude=data --exclude=dist --exclude=build -czf "%ARCHIVE%" -C "%PROJECT_ROOT%" .
+echo [2/6] Package local project...
+tar --exclude=.git --exclude=.obsidian --exclude=env --exclude=data --exclude=dist --exclude=build --exclude=src/django/db.sqlite3 --exclude=./src/django/db.sqlite3 --exclude=src/django/db --exclude=./src/django/db -czf "%ARCHIVE%" -C "%PROJECT_ROOT%" .
 if errorlevel 1 goto fail
 
 echo.
-echo [3/5] Upload package...
+echo [3/6] Upload package...
 scp -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%ARCHIVE%" "%SSH_TARGET%:%REMOTE_ARCHIVE%"
 if errorlevel 1 goto fail
 
 echo.
-echo [4/5] Extract package on remote host...
+echo [4/6] Extract package on remote host...
 ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "tar -xzf %REMOTE_ARCHIVE% -C %REMOTE_DIR% && rm -f %REMOTE_ARCHIVE%"
 if errorlevel 1 goto fail
 
 echo.
-echo [5/5] Start remote containers...
+echo [5/6] Preserve database...
+set /p "KEEP_DB=Keep database from old code directory %REMOTE_OLD%/%REMOTE_DB_REL% ? [y/N]: "
+if /I "%KEEP_DB%"=="Y" goto preserve_db
+if /I "%KEEP_DB%"=="YES" goto preserve_db
+goto after_preserve_db
+
+:preserve_db
+ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "if [ -f %REMOTE_OLD%/%REMOTE_DB_REL% ]; then mkdir -p %REMOTE_DIR%/src/django && cp -f %REMOTE_OLD%/%REMOTE_DB_REL% %REMOTE_DIR%/%REMOTE_DB_REL% && echo '[OK] Database preserved.'; else echo '[WARN] Old database not found: %REMOTE_OLD%/%REMOTE_DB_REL%'; fi"
+if errorlevel 1 goto fail
+
+:after_preserve_db
+
+echo.
+echo [6/6] Start remote containers...
 ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "cd %REMOTE_DIR% && (docker compose up -d --build || docker-compose up -d --build)"
 if errorlevel 1 goto fail
 

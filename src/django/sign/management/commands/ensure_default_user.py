@@ -3,6 +3,8 @@ import os
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
+from sign.permission_service import ensure_permission_nodes
+
 
 class Command(BaseCommand):
     help = 'Ensure the default local development accounts exist.'
@@ -46,3 +48,6 @@ class Command(BaseCommand):
 
             action = 'Created' if created else 'Updated'
             self.stdout.write(self.style.SUCCESS(f'{action} default account: {username}'))
+
+        ensure_permission_nodes()
+        self.stdout.write(self.style.SUCCESS('Synchronized permission nodes.'))

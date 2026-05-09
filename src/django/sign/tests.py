@@ -3,6 +3,8 @@ import json
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from .models import UserPermission
+
 
 class SignApiTests(TestCase):
     def setUp(self):
@@ -54,3 +56,112 @@ class SignApiTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse('_auth_user_id' in self.client.session)
+
+    def test_root_has_locked_permission_editor_access(self):
+        self.client.login(username='root', password='123456')
+
+        response = self.client.get('/api/permissions/check/?node=permissions.table.edit')
+        payload = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(payload['data']['allowed'])
+
+    def test_user_permissions_can_store_false_values(self):
+        user_model = get_user_model()
+        normal_user, _ = user_model.objects.get_or_create(username='user')
+        normal_user.set_password('123456')
+        normal_user.save()
+        self.client.login(username='root', password='123456')
+
+        response = self.client.put(
+            f'/api/permissions/users/{normal_user.id}/',
+            data=json.dumps(
+                {
+                    'permissions': [
+                        {'node': 'files.*', 'value': True},
+                        {'node': 'files.delete.own', 'value': False},
+                    ]
+                }
+            ),
+            content_type='application/json',
+        )
+        payload = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(payload['data']['direct_permissions']), 2)
+
+        self.client.logout()
+        self.client.login(username='user', password='123456')
+
+        allowed_response = self.client.get('/api/permissions/check/?node=files.read.own')
+        denied_response = self.client.get('/api/permissions/check/?node=files.delete.own')
+
+        self.assertTrue(allowed_response.json()['data']['allowed'])
+        self.assertFalse(denied_response.json()['data']['allowed'])
+
+    def test_account_detail_reports_self_update_permissions(self):
+        UserPermission.objects.create(user=self.user, node='account.username.update', value=True)
+        self.client.login(username='root', password='123456')
+
+        response = self.client.get('/api/account/')
+        payload = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(payload['data']['account']['permissions']['can_update_username'])
+        self.assertTrue(payload['data']['account']['permissions']['can_update_password'])
+
+    def test_root_username_is_locked(self):
+        self.client.login(username='root', password='123456')
+
+        response = self.client.post(
+            '/api/account/username/',
+            data=json.dumps({'username': 'admin-root'}),
+            content_type='application/json',
+        )
+        self.user.refresh_from_db()
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.user.username, 'root')
+
+    def test_update_username_requires_permission_and_logs_out(self):
+        user_model = get_user_model()
+        normal_user, _ = user_model.objects.get_or_create(username='user')
+        normal_user.set_password('123456')
+        normal_user.save()
+        UserPermission.objects.create(user=normal_user, node='account.username.update', value=True)
+        self.client.login(username='user', password='123456')
+
+        response = self.client.post(
+            '/api/account/username/',
+            data=json.dumps({'username': 'renamed'}),
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse('_auth_user_id' in self.client.session)
+        self.assertTrue(self.client.login(username='renamed', password='123456'))
+
+    def test_update_password_requires_old_password_and_logs_out(self):
+        user_model = get_user_model()
+        normal_user, _ = user_model.objects.get_or_create(username='user')
+        normal_user.set_password('123456')
+        normal_user.save()
+        UserPermission.objects.create(user=normal_user, node='account.password.update', value=True)
+        self.client.login(username='user', password='123456')
+
+        bad_response = self.client.post(
+            '/api/account/password/',
+            data=json.dumps({'oldPassword': 'wrong', 'newPassword': 'abcdef'}),
+            content_type='application/json',
+        )
+        self.assertEqual(bad_response.status_code, 400)
+
+        response = self.client.post(
+            '/api/account/password/',
+            data=json.dumps({'oldPassword': '123456', 'newPassword': 'abcdef'}),
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse('_auth_user_id' in self.client.session)
+        self.assertTrue(self.client.login(username='user', password='abcdef'))

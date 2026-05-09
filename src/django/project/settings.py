@@ -6,6 +6,10 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+SQLITE_DB_PATH = Path(
+    os.environ.get('SMARTMEDIADISK_SQLITE_PATH', BASE_DIR / 'db' / 'db.sqlite3')
+)
+SQLITE_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 SECRET_KEY = 'django-insecure-1234567890qwerty'  # 在生产环境中应使用环境变量
 DEBUG = True
@@ -58,7 +62,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': SQLITE_DB_PATH,
     }
 }
 

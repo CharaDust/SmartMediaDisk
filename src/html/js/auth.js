@@ -7,6 +7,7 @@
     const sessionUrl = '/api/signin/session/';
     const logoutUrl = '/api/signin/logout/';
     const userStorageKey = 'smartMediaDiskUser';
+    const permissionCheckUrl = '/api/permissions/check/';
 
     function readStoredUser() {
         try {
@@ -44,6 +45,50 @@
         if (homeUsername) {
             homeUsername.textContent = user ? user.username : '访客';
         }
+
+        document.querySelectorAll('[data-permission-required]').forEach((element) => {
+            element.classList.add('d-none');
+        });
+    }
+
+    async function renderPermissionLinks(user) {
+        if (!user) {
+            return;
+        }
+
+        const permissionElements = Array.from(document.querySelectorAll('[data-permission-required]'));
+        if (user.username === 'root' || user.is_superuser) {
+            permissionElements.forEach((element) => {
+                element.classList.remove('d-none');
+            });
+            return;
+        }
+
+        const permissionNodes = Array.from(new Set(permissionElements.map((element) => {
+            return element.getAttribute('data-permission-required');
+        })));
+
+        await Promise.all(permissionNodes.map(async (node) => {
+            try {
+                const response = await fetch(`${permissionCheckUrl}?node=${encodeURIComponent(node)}`, {
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                const allowed = response.ok && result.data && result.data.allowed;
+
+                permissionElements
+                    .filter((element) => element.getAttribute('data-permission-required') === node)
+                    .forEach((element) => {
+                        element.classList.toggle('d-none', !allowed);
+                    });
+            } catch (error) {
+                permissionElements
+                    .filter((element) => element.getAttribute('data-permission-required') === node)
+                    .forEach((element) => {
+                        element.classList.add('d-none');
+                    });
+            }
+        }));
     }
 
     async function refreshAuthState() {
@@ -59,8 +104,10 @@
 
             setStoredUser(user);
             renderAuthState(user);
+            await renderPermissionLinks(user);
         } catch (error) {
             renderAuthState(storedUser);
+            await renderPermissionLinks(storedUser);
         }
     }
 
