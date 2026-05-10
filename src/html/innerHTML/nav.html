@@ -1,6 +1,6 @@
 <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/index.html">Media Cube</a>
+        <a class="navbar-brand" href="/index.html" data-navbar-title>Media Cube</a>
 
         <div class="d-flex align-items-center gap-2">
             <span class="navbar-text small d-none" data-auth-username></span>
@@ -12,13 +12,16 @@
 
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Media Cube</h5>
+                <h5 class="offcanvas-title" id="offcanvasNavbarLabel" data-navbar-title>Media Cube</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="关闭"></button>
             </div>
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                     <li class="nav-item">
                         <a class="nav-link" href="/index.html">浏览</a>
+                    </li>
+                    <li class="nav-item d-none" data-permission-required="files.list.own">
+                        <a class="nav-link" href="/files.html">文件</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">传输</a>
@@ -63,4 +66,4 @@
     </div>
 </nav>
 <div class="container" style="height: 56px;"></div>
-<script src="/js/auth.js?v=20260506-profile" defer></script>
+<script src="/js/auth.js?v=20260509-navbar-title" defer></script>

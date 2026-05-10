@@ -101,6 +101,26 @@
                         </div>
                     </div>
 
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h2 class="h5 mb-0">更改导航栏标题</h2>
+                            <span class="badge" id="navbarTitlePermissionBadge">检查中</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="navbarTitleForm" novalidate>
+                                <label for="navbarTitle" class="form-label">导航栏标题</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="navbarTitle" maxlength="60"
+                                        autocomplete="off" required disabled>
+                                    <button class="btn btn-primary" type="submit" id="navbarTitleSubmit" disabled>
+                                        保存
+                                    </button>
+                                </div>
+                                <div class="form-text">默认值：Media Cube</div>
+                            </form>
+                        </div>
+                    </div>
+
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h2 class="h5 mb-0">修改密码</h2>
@@ -135,7 +155,8 @@
         const endpoints = {
             account: '/api/account/',
             username: '/api/account/username/',
-            password: '/api/account/password/'
+            password: '/api/account/password/',
+            navbarTitle: '/api/account/navbar-title/update/'
         };
         const storageKey = 'smartMediaDiskUser';
         const elements = {
@@ -148,10 +169,14 @@
             accountJoined: document.getElementById('accountJoined'),
             accountLastLogin: document.getElementById('accountLastLogin'),
             usernamePermissionBadge: document.getElementById('usernamePermissionBadge'),
+            navbarTitlePermissionBadge: document.getElementById('navbarTitlePermissionBadge'),
             passwordPermissionBadge: document.getElementById('passwordPermissionBadge'),
             usernameForm: document.getElementById('usernameForm'),
             newUsername: document.getElementById('newUsername'),
             usernameSubmit: document.getElementById('usernameSubmit'),
+            navbarTitleForm: document.getElementById('navbarTitleForm'),
+            navbarTitle: document.getElementById('navbarTitle'),
+            navbarTitleSubmit: document.getElementById('navbarTitleSubmit'),
             passwordForm: document.getElementById('passwordForm'),
             oldPassword: document.getElementById('oldPassword'),
             newPassword: document.getElementById('newPassword'),
@@ -175,6 +200,12 @@
         function setPermissionBadge(element, allowed) {
             element.className = allowed ? 'badge text-bg-success' : 'badge text-bg-secondary';
             element.textContent = allowed ? '已授权' : '无权限';
+        }
+
+        function renderNavbarTitle(title) {
+            document.querySelectorAll('[data-navbar-title]').forEach((element) => {
+                element.textContent = title;
+            });
         }
 
         async function fetchJson(url, options = {}) {
@@ -214,11 +245,15 @@
             elements.accountJoined.textContent = formatDate(account.date_joined);
             elements.accountLastLogin.textContent = formatDate(account.last_login);
             elements.newUsername.value = account.username;
+            elements.navbarTitle.value = (account.settings && account.settings.navbar_title) || 'Media Cube';
+            renderNavbarTitle(elements.navbarTitle.value);
 
             const canUpdateUsername = account.permissions.can_update_username;
             const canUpdatePassword = account.permissions.can_update_password;
+            const canUpdateNavbarTitle = account.permissions.can_update_navbar_title;
 
             setPermissionBadge(elements.usernamePermissionBadge, canUpdateUsername);
+            setPermissionBadge(elements.navbarTitlePermissionBadge, canUpdateNavbarTitle);
             setPermissionBadge(elements.passwordPermissionBadge, canUpdatePassword);
             if (account.username === 'root') {
                 elements.usernamePermissionBadge.className = 'badge text-bg-warning';
@@ -227,6 +262,8 @@
 
             elements.newUsername.disabled = !canUpdateUsername;
             elements.usernameSubmit.disabled = !canUpdateUsername;
+            elements.navbarTitle.disabled = !canUpdateNavbarTitle;
+            elements.navbarTitleSubmit.disabled = !canUpdateNavbarTitle;
             elements.oldPassword.disabled = !canUpdatePassword;
             elements.newPassword.disabled = !canUpdatePassword;
             elements.passwordSubmit.disabled = !canUpdatePassword;
@@ -264,6 +301,30 @@
             } catch (error) {
                 setMessage(error.message, 'danger');
                 elements.usernameSubmit.disabled = false;
+            }
+        });
+
+        elements.navbarTitleForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const navbarTitle = elements.navbarTitle.value.trim();
+            if (!navbarTitle) {
+                setMessage('请填写导航栏标题。', 'warning');
+                return;
+            }
+
+            elements.navbarTitleSubmit.disabled = true;
+            try {
+                const data = await fetchJson(endpoints.navbarTitle, {
+                    method: 'POST',
+                    body: JSON.stringify({ navbarTitle })
+                });
+                elements.navbarTitle.value = data.navbar_title;
+                renderNavbarTitle(data.navbar_title);
+                setMessage('导航栏标题已更新。', 'success');
+            } catch (error) {
+                setMessage(error.message, 'danger');
+            } finally {
+                elements.navbarTitleSubmit.disabled = elements.navbarTitle.disabled;
             }
         });
 

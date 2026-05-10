@@ -54,6 +54,12 @@ PERMISSION_NODES = [
         'description': '允许当前登录用户在提供旧密码后修改自己的登录密码。',
     },
     {
+        'node': 'account.navbar_title.update',
+        'label': '更改导航栏标题',
+        'category': '个人中心',
+        'description': '允许当前登录用户更改全站导航栏标题。',
+    },
+    {
         'node': 'files.list.own',
         'label': '查看自己的文件列表',
         'category': '文件',

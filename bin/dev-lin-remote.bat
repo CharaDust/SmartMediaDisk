@@ -8,7 +8,7 @@ set "REMOTE_APP=SmartMediaDisk"
 set "REMOTE_DIR=%REMOTE_BASE%/%REMOTE_APP%"
 set "REMOTE_OLD=%REMOTE_BASE%/%REMOTE_APP%_old"
 set "REMOTE_ARCHIVE=/tmp/smartmediadisk_upload.tar.gz"
-set "REMOTE_DB_REL=src/django/db.sqlite3"
+set "REMOTE_DB_REL=src/django/db/db.sqlite3"
 
 for %%I in ("%~dp0..") do set "PROJECT_ROOT=%%~fI"
 
@@ -66,8 +66,14 @@ echo [INFO] Remote host: %SSH_TARGET%
 echo [INFO] Remote path: %REMOTE_DIR%
 echo.
 
+echo [0/6] Database policy...
+set /p "KEEP_DB=Keep database from Docker volume or old code directory? [y/N]: "
+set "COMPOSE_DOWN=(docker compose down -v || docker-compose down -v || true)"
+if /I "%KEEP_DB%"=="Y" set "COMPOSE_DOWN=(docker compose down || docker-compose down || true)"
+if /I "%KEEP_DB%"=="YES" set "COMPOSE_DOWN=(docker compose down || docker-compose down || true)"
+
 echo [1/6] Stop remote containers and backup old code...
-ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "cd %REMOTE_DIR% 2>/dev/null && (docker compose down || docker-compose down || true); mkdir -p %REMOTE_BASE%; if [ -e %REMOTE_OLD% ]; then mv %REMOTE_OLD% %REMOTE_OLD%_$(date +%%s); fi; if [ -e %REMOTE_DIR% ]; then mv %REMOTE_DIR% %REMOTE_OLD%; fi; mkdir -p %REMOTE_DIR%"
+ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "cd %REMOTE_DIR% 2>/dev/null && %COMPOSE_DOWN%; mkdir -p %REMOTE_BASE%; if [ -e %REMOTE_OLD% ]; then mv %REMOTE_OLD% %REMOTE_OLD%_$(date +%%s); fi; if [ -e %REMOTE_DIR% ]; then mv %REMOTE_DIR% %REMOTE_OLD%; fi; mkdir -p %REMOTE_DIR%"
 if errorlevel 1 goto fail
 
 echo.
@@ -86,14 +92,13 @@ ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%
 if errorlevel 1 goto fail
 
 echo.
-echo [5/6] Preserve database...
-set /p "KEEP_DB=Keep database from old code directory %REMOTE_OLD%/%REMOTE_DB_REL% ? [y/N]: "
+echo [5/6] Preserve runtime data if requested...
 if /I "%KEEP_DB%"=="Y" goto preserve_db
 if /I "%KEEP_DB%"=="YES" goto preserve_db
 goto after_preserve_db
 
 :preserve_db
-ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "if [ -f %REMOTE_OLD%/%REMOTE_DB_REL% ]; then mkdir -p %REMOTE_DIR%/src/django && cp -f %REMOTE_OLD%/%REMOTE_DB_REL% %REMOTE_DIR%/%REMOTE_DB_REL% && echo '[OK] Database preserved.'; else echo '[WARN] Old database not found: %REMOTE_OLD%/%REMOTE_DB_REL%'; fi"
+ssh -i "%KEY_FILE%" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new "%SSH_TARGET%" "if [ -d %REMOTE_OLD%/data ]; then mkdir -p %REMOTE_DIR% && cp -a %REMOTE_OLD%/data %REMOTE_DIR%/data && echo '[OK] Runtime data directory preserved.'; else echo '[INFO] No old runtime data directory found.'; fi; if [ -f %REMOTE_OLD%/%REMOTE_DB_REL% ]; then mkdir -p $(dirname %REMOTE_DIR%/%REMOTE_DB_REL%) && cp -f %REMOTE_OLD%/%REMOTE_DB_REL% %REMOTE_DIR%/%REMOTE_DB_REL% && echo '[OK] Legacy file database preserved.'; else echo '[INFO] No legacy file database found; Docker volume was kept if it existed.'; fi"
 if errorlevel 1 goto fail
 
 :after_preserve_db

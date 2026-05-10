@@ -8,6 +8,7 @@
     const logoutUrl = '/api/signin/logout/';
     const userStorageKey = 'smartMediaDiskUser';
     const permissionCheckUrl = '/api/permissions/check/';
+    const navbarTitleUrl = '/api/account/navbar-title/';
 
     function readStoredUser() {
         try {
@@ -49,6 +50,26 @@
         document.querySelectorAll('[data-permission-required]').forEach((element) => {
             element.classList.add('d-none');
         });
+    }
+
+    function renderNavbarTitle(title) {
+        const value = (title || 'Media Cube').trim() || 'Media Cube';
+        document.querySelectorAll('[data-navbar-title]').forEach((element) => {
+            element.textContent = value;
+        });
+    }
+
+    async function refreshNavbarTitle() {
+        try {
+            const response = await fetch(navbarTitleUrl, {
+                credentials: 'same-origin'
+            });
+            const result = await response.json();
+            const title = result.data && result.data.navbar_title;
+            renderNavbarTitle(title);
+        } catch (error) {
+            renderNavbarTitle('Media Cube');
+        }
     }
 
     async function renderPermissionLinks(user) {
@@ -133,6 +154,7 @@
             });
         });
 
+        refreshNavbarTitle();
         refreshAuthState();
     });
 }());

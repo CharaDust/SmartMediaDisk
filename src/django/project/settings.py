@@ -6,10 +6,19 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = BASE_DIR.parent.parent
 SQLITE_DB_PATH = Path(
     os.environ.get('SMARTMEDIADISK_SQLITE_PATH', BASE_DIR / 'db' / 'db.sqlite3')
 )
 SQLITE_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+SMARTMEDIADISK_STORAGE_PATH = Path(
+    os.environ.get('SMARTMEDIADISK_STORAGE_PATH', REPO_ROOT / 'data' / 'storage')
+)
+SMARTMEDIADISK_UPLOAD_TEMP_PATH = Path(
+    os.environ.get('SMARTMEDIADISK_UPLOAD_TEMP_PATH', REPO_ROOT / 'data' / 'upload-tmp')
+)
+SMARTMEDIADISK_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
+SMARTMEDIADISK_UPLOAD_TEMP_PATH.mkdir(parents=True, exist_ok=True)
 
 SECRET_KEY = 'django-insecure-1234567890qwerty'  # 在生产环境中应使用环境变量
 DEBUG = True
@@ -24,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'helloworld',
     'sign',
+    'files',
     'random32767',
     'db_test',
 ]
@@ -75,3 +85,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.environ.get('DATA_UPLOAD_MAX_MEMORY_SIZE', 2 * 1024 * 1024 * 1024))
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.environ.get('FILE_UPLOAD_MAX_MEMORY_SIZE', 10 * 1024 * 1024))

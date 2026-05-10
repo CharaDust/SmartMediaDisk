@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .models import UserPermission
+from .models import SiteSetting, UserPermission
 
 
 class SignApiTests(TestCase):
@@ -109,6 +109,41 @@ class SignApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(payload['data']['account']['permissions']['can_update_username'])
         self.assertTrue(payload['data']['account']['permissions']['can_update_password'])
+        self.assertTrue(payload['data']['account']['permissions']['can_update_navbar_title'])
+        self.assertEqual(payload['data']['account']['settings']['navbar_title'], 'Media Cube')
+
+    def test_navbar_title_defaults_to_media_cube(self):
+        response = self.client.get('/api/account/navbar-title/')
+        payload = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(payload['data']['navbar_title'], 'Media Cube')
+
+    def test_update_navbar_title_requires_permission(self):
+        user_model = get_user_model()
+        normal_user, _ = user_model.objects.get_or_create(username='user')
+        normal_user.set_password('123456')
+        normal_user.save()
+        self.client.login(username='user', password='123456')
+
+        denied_response = self.client.post(
+            '/api/account/navbar-title/update/',
+            data=json.dumps({'navbarTitle': 'Denied Cube'}),
+            content_type='application/json',
+        )
+        self.assertEqual(denied_response.status_code, 403)
+
+        UserPermission.objects.create(user=normal_user, node='account.navbar_title.update', value=True)
+        allowed_response = self.client.post(
+            '/api/account/navbar-title/update/',
+            data=json.dumps({'navbarTitle': 'Family Media'}),
+            content_type='application/json',
+        )
+        payload = allowed_response.json()
+
+        self.assertEqual(allowed_response.status_code, 200)
+        self.assertEqual(payload['data']['navbar_title'], 'Family Media')
+        self.assertEqual(SiteSetting.objects.get(key='navbar_title').value, 'Family Media')
 
     def test_root_username_is_locked(self):
         self.client.login(username='root', password='123456')

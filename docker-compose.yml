@@ -14,11 +14,16 @@ services:
       - "8000:8000"
     volumes:
       - ./src/django:/app
+      - ./data:/app/data
       - sqlite_data:/app/db
       - static_volume:/app/staticfiles
     environment:
       - DEBUG=1
       - SMARTMEDIADISK_SQLITE_PATH=/app/db/db.sqlite3
+      - SMARTMEDIADISK_STORAGE_PATH=/app/data/storage
+      - SMARTMEDIADISK_UPLOAD_TEMP_PATH=/app/data/upload-tmp
+      - DATA_UPLOAD_MAX_MEMORY_SIZE=2147483648
+      - FILE_UPLOAD_MAX_MEMORY_SIZE=10485760
 
   # nginx开发环境服务
   nginx-dev:
