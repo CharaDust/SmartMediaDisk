@@ -2,3 +2,6 @@
 */.DS_Store
 **/.DS_Store
 .obsidian/workspace.json
+src/django/db.sqlite3
+src/django/db/
+bin/dev-lin-remote.bat

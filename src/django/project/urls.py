@@ -10,6 +10,11 @@ def hello_world(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_world), # 添加根路由
+    path('api/', include('helloworld.urls')),
+    path('api/signin/', include('sign.urls')),
+    path('api/account/', include('sign.account_urls')),
+    path('api/permissions/', include('sign.permission_urls')),
+    path('api/files/', include('files.urls')),
     path('api/random32767/', include('random32767.urls')), # 自定义app
     path('api/dbtest/', include('db_test.urls')), # 注意这里加了前缀 'api/testdb/'
     # path('api/', include('your_api_app.urls')), # 如果你有API应用，取消注释并添加

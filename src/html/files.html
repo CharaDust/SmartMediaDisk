@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="bkgpic.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
+    <title>文件管理 - Media Cube</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="m-0 border-0 bd-example">
+    <!--# include virtual="/innerHTML/nav.html" -->
+
+    <div class="overlay fixed-top"></div>
+    <main class="container py-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+            <div>
+                <h1 class="h3 mb-1">文件管理</h1>
+                <div class="text-secondary small" id="files-current-path">/</div>
+            </div>
+            <button class="btn btn-outline-secondary" id="files-up-button" type="button">
+                <i class="bi bi-arrow-up"></i>
+                上一级
+            </button>
+        </div>
+
+        <nav aria-label="文件路径">
+            <ol class="breadcrumb" id="files-breadcrumb"></ol>
+        </nav>
+
+        <div class="row g-3 align-items-end mb-3">
+            <div class="col-12 col-lg-7">
+                <form class="d-flex gap-2" id="upload-form">
+                    <input class="form-control" id="file-upload-input" type="file">
+                    <button class="btn btn-dark text-nowrap" type="submit">
+                        <i class="bi bi-upload"></i>
+                        上传
+                    </button>
+                </form>
+            </div>
+            <div class="col-12 col-lg-5">
+                <form class="d-flex gap-2" id="directory-form">
+                    <input class="form-control" id="directory-name-input" type="text" placeholder="新目录名" maxlength="255">
+                    <button class="btn btn-outline-dark text-nowrap" type="submit">
+                        <i class="bi bi-folder-plus"></i>
+                        新建
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span id="files-status" class="small text-secondary"></span>
+        </div>
+
+        <div class="table-responsive bg-body">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">名称</th>
+                        <th scope="col">类型</th>
+                        <th scope="col">大小</th>
+                        <th scope="col">所有者</th>
+                        <th scope="col">更新时间</th>
+                        <th scope="col" class="text-end">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="files-table-body">
+                    <tr>
+                        <td colspan="6" class="text-center text-secondary py-4">加载中...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="/js/api/files.js"></script>
+    <script src="/js/files-page.js"></script>
+</body>
+
+</html>

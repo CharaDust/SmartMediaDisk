@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>个人中心 - Media Cube</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+
+        .profile-header {
+            background: #172033;
+            color: #f8fafc;
+        }
+
+        .account-label {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .account-value {
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+
+<body>
+    <!--# include virtual="/innerHTML/nav.html" -->
+
+    <main>
+        <section class="profile-header py-4">
+            <div class="container">
+                <h1 class="h3 mb-1">个人中心</h1>
+                <p class="mb-0 text-white-50">查看账户信息，并在拥有权限时修改登录凭据。</p>
+            </div>
+        </section>
+
+        <section class="container py-4">
+            <div id="messageArea" class="alert d-none" role="status"></div>
+
+            <div class="row g-4">
+                <section class="col-12 col-lg-5">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white">
+                            <h2 class="h5 mb-0">账户信息</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="account-label">用户 ID</div>
+                                <div class="account-value" id="accountId">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="account-label">用户名</div>
+                                <div class="account-value" id="accountUsername">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="account-label">邮箱</div>
+                                <div class="account-value" id="accountEmail">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="account-label">角色标记</div>
+                                <div class="d-flex gap-2 mt-1">
+                                    <span class="badge text-bg-secondary" id="staffBadge">staff false</span>
+                                    <span class="badge text-bg-secondary" id="superuserBadge">superuser false</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="account-label">加入时间</div>
+                                <div class="account-value" id="accountJoined">-</div>
+                            </div>
+                            <div>
+                                <div class="account-label">上次登录</div>
+                                <div class="account-value" id="accountLastLogin">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="col-12 col-lg-7">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h2 class="h5 mb-0">修改用户名</h2>
+                            <span class="badge" id="usernamePermissionBadge">检查中</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="usernameForm" novalidate>
+                                <label for="newUsername" class="form-label">新用户名</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="newUsername" autocomplete="username"
+                                        required disabled>
+                                    <button class="btn btn-primary" type="submit" id="usernameSubmit" disabled>
+                                        保存
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h2 class="h5 mb-0">更改导航栏标题</h2>
+                            <span class="badge" id="navbarTitlePermissionBadge">检查中</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="navbarTitleForm" novalidate>
+                                <label for="navbarTitle" class="form-label">导航栏标题</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="navbarTitle" maxlength="60"
+                                        autocomplete="off" required disabled>
+                                    <button class="btn btn-primary" type="submit" id="navbarTitleSubmit" disabled>
+                                        保存
+                                    </button>
+                                </div>
+                                <div class="form-text">默认值：Media Cube</div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h2 class="h5 mb-0">修改密码</h2>
+                            <span class="badge" id="passwordPermissionBadge">检查中</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="passwordForm" novalidate>
+                                <div class="mb-3">
+                                    <label for="oldPassword" class="form-label">旧密码</label>
+                                    <input type="password" class="form-control" id="oldPassword"
+                                        autocomplete="current-password" required disabled>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">新密码</label>
+                                    <input type="password" class="form-control" id="newPassword"
+                                        autocomplete="new-password" required disabled>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary" type="submit" id="passwordSubmit" disabled>
+                                        保存并退出登录
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const endpoints = {
+            account: '/api/account/',
+            username: '/api/account/username/',
+            password: '/api/account/password/',
+            navbarTitle: '/api/account/navbar-title/update/'
+        };
+        const storageKey = 'smartMediaDiskUser';
+        const elements = {
+            messageArea: document.getElementById('messageArea'),
+            accountId: document.getElementById('accountId'),
+            accountUsername: document.getElementById('accountUsername'),
+            accountEmail: document.getElementById('accountEmail'),
+            staffBadge: document.getElementById('staffBadge'),
+            superuserBadge: document.getElementById('superuserBadge'),
+            accountJoined: document.getElementById('accountJoined'),
+            accountLastLogin: document.getElementById('accountLastLogin'),
+            usernamePermissionBadge: document.getElementById('usernamePermissionBadge'),
+            navbarTitlePermissionBadge: document.getElementById('navbarTitlePermissionBadge'),
+            passwordPermissionBadge: document.getElementById('passwordPermissionBadge'),
+            usernameForm: document.getElementById('usernameForm'),
+            newUsername: document.getElementById('newUsername'),
+            usernameSubmit: document.getElementById('usernameSubmit'),
+            navbarTitleForm: document.getElementById('navbarTitleForm'),
+            navbarTitle: document.getElementById('navbarTitle'),
+            navbarTitleSubmit: document.getElementById('navbarTitleSubmit'),
+            passwordForm: document.getElementById('passwordForm'),
+            oldPassword: document.getElementById('oldPassword'),
+            newPassword: document.getElementById('newPassword'),
+            passwordSubmit: document.getElementById('passwordSubmit')
+        };
+
+        function setMessage(message, state = 'secondary') {
+            elements.messageArea.className = `alert alert-${state}`;
+            elements.messageArea.textContent = message;
+            elements.messageArea.classList.toggle('d-none', !message);
+        }
+
+        function formatDate(value) {
+            if (!value) {
+                return '-';
+            }
+
+            return new Date(value).toLocaleString('zh-CN');
+        }
+
+        function setPermissionBadge(element, allowed) {
+            element.className = allowed ? 'badge text-bg-success' : 'badge text-bg-secondary';
+            element.textContent = allowed ? '已授权' : '无权限';
+        }
+
+        function renderNavbarTitle(title) {
+            document.querySelectorAll('[data-navbar-title]').forEach((element) => {
+                element.textContent = title;
+            });
+        }
+
+        async function fetchJson(url, options = {}) {
+            const response = await fetch(url, {
+                credentials: 'same-origin',
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {})
+                }
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || '请求失败。');
+            }
+
+            return result.data;
+        }
+
+        function leaveForSignIn(message) {
+            localStorage.removeItem(storageKey);
+            setMessage(message, 'success');
+            window.setTimeout(() => {
+                window.location.assign('/sign.html');
+            }, 700);
+        }
+
+        function renderAccount(account) {
+            elements.accountId.textContent = account.id;
+            elements.accountUsername.textContent = account.username;
+            elements.accountEmail.textContent = account.email || '-';
+            elements.staffBadge.textContent = `staff ${account.is_staff}`;
+            elements.staffBadge.className = account.is_staff ? 'badge text-bg-info' : 'badge text-bg-secondary';
+            elements.superuserBadge.textContent = `superuser ${account.is_superuser}`;
+            elements.superuserBadge.className = account.is_superuser ? 'badge text-bg-warning' : 'badge text-bg-secondary';
+            elements.accountJoined.textContent = formatDate(account.date_joined);
+            elements.accountLastLogin.textContent = formatDate(account.last_login);
+            elements.newUsername.value = account.username;
+            elements.navbarTitle.value = (account.settings && account.settings.navbar_title) || 'Media Cube';
+            renderNavbarTitle(elements.navbarTitle.value);
+
+            const canUpdateUsername = account.permissions.can_update_username;
+            const canUpdatePassword = account.permissions.can_update_password;
+            const canUpdateNavbarTitle = account.permissions.can_update_navbar_title;
+
+            setPermissionBadge(elements.usernamePermissionBadge, canUpdateUsername);
+            setPermissionBadge(elements.navbarTitlePermissionBadge, canUpdateNavbarTitle);
+            setPermissionBadge(elements.passwordPermissionBadge, canUpdatePassword);
+            if (account.username === 'root') {
+                elements.usernamePermissionBadge.className = 'badge text-bg-warning';
+                elements.usernamePermissionBadge.textContent = 'root 锁定';
+            }
+
+            elements.newUsername.disabled = !canUpdateUsername;
+            elements.usernameSubmit.disabled = !canUpdateUsername;
+            elements.navbarTitle.disabled = !canUpdateNavbarTitle;
+            elements.navbarTitleSubmit.disabled = !canUpdateNavbarTitle;
+            elements.oldPassword.disabled = !canUpdatePassword;
+            elements.newPassword.disabled = !canUpdatePassword;
+            elements.passwordSubmit.disabled = !canUpdatePassword;
+        }
+
+        async function loadAccount() {
+            try {
+                const data = await fetchJson(endpoints.account);
+                renderAccount(data.account);
+            } catch (error) {
+                if (error.message === 'Authentication required.') {
+                    window.location.assign('/sign.html');
+                    return;
+                }
+
+                setMessage(error.message, 'danger');
+            }
+        }
+
+        elements.usernameForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = elements.newUsername.value.trim();
+            if (!username) {
+                setMessage('请填写新用户名。', 'warning');
+                return;
+            }
+
+            elements.usernameSubmit.disabled = true;
+            try {
+                await fetchJson(endpoints.username, {
+                    method: 'POST',
+                    body: JSON.stringify({ username })
+                });
+                leaveForSignIn('用户名已修改，请使用新用户名重新登录。');
+            } catch (error) {
+                setMessage(error.message, 'danger');
+                elements.usernameSubmit.disabled = false;
+            }
+        });
+
+        elements.navbarTitleForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const navbarTitle = elements.navbarTitle.value.trim();
+            if (!navbarTitle) {
+                setMessage('请填写导航栏标题。', 'warning');
+                return;
+            }
+
+            elements.navbarTitleSubmit.disabled = true;
+            try {
+                const data = await fetchJson(endpoints.navbarTitle, {
+                    method: 'POST',
+                    body: JSON.stringify({ navbarTitle })
+                });
+                elements.navbarTitle.value = data.navbar_title;
+                renderNavbarTitle(data.navbar_title);
+                setMessage('导航栏标题已更新。', 'success');
+            } catch (error) {
+                setMessage(error.message, 'danger');
+            } finally {
+                elements.navbarTitleSubmit.disabled = elements.navbarTitle.disabled;
+            }
+        });
+
+        elements.passwordForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const oldPassword = elements.oldPassword.value;
+            const newPassword = elements.newPassword.value;
+            if (!oldPassword || !newPassword) {
+                setMessage('请填写旧密码和新密码。', 'warning');
+                return;
+            }
+
+            elements.passwordSubmit.disabled = true;
+            try {
+                await fetchJson(endpoints.password, {
+                    method: 'POST',
+                    body: JSON.stringify({ oldPassword, newPassword })
+                });
+                leaveForSignIn('密码已修改，请使用新密码重新登录。');
+            } catch (error) {
+                setMessage(error.message, 'danger');
+                elements.passwordSubmit.disabled = false;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', loadAccount);
+    </script>
+</body>
+
+</html>
