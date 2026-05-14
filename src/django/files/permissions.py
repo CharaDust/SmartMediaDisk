@@ -42,6 +42,11 @@ def can_download_file(user, entry):
     return _can_access_file(user, entry, 'download')
 
 
+def can_preview_file(user, entry):
+    """Return whether a user can preview a file entry."""
+    return can_download_file(user, entry)
+
+
 def can_rename_file(user, entry):
     """Return whether a user can rename a file entry."""
     return _can_access_file(user, entry, 'rename')

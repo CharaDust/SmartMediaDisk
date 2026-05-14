@@ -36,6 +36,12 @@ PERMISSION_NODES = [
         'description': '允许修改用户基础资料、启停状态。',
     },
     {
+        'node': 'users.delete',
+        'label': '删除用户',
+        'category': '用户',
+        'description': '允许删除普通用户；root 用户受系统保护，不能删除。',
+    },
+    {
         'node': 'users.password.reset',
         'label': '重置用户密码',
         'category': '用户',

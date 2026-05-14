@@ -1,5 +1,12 @@
+import csv
 import json
+import shutil
+import subprocess
+import tempfile
+from io import StringIO
+from pathlib import Path
 
+from django.conf import settings
 from django.db import transaction
 from django.http import FileResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -11,6 +18,7 @@ from .permissions import (
     can_delete_file,
     can_download_file,
     can_list_directory,
+    can_preview_file,
     can_see_file_in_list,
     can_manage_directory,
     can_move_file,
@@ -18,6 +26,40 @@ from .permissions import (
     can_upload_file,
 )
 from .storage_service import create_file_entry, delete_file_entry, get_physical_path
+
+TEXT_PREVIEW_MAX_BYTES = 512 * 1024
+CSV_PREVIEW_MAX_ROWS = 200
+TEXT_PREVIEW_EXTENSIONS = {
+    '.css',
+    '.csv',
+    '.html',
+    '.js',
+    '.json',
+    '.log',
+    '.md',
+    '.py',
+    '.txt',
+    '.xml',
+    '.yaml',
+    '.yml',
+}
+IMAGE_PREVIEW_MIME_TYPES = {'image/png'}
+IMAGE_PREVIEW_EXTENSIONS = {'.png'}
+CSV_PREVIEW_MIME_TYPES = {'text/csv', 'application/csv', 'application/vnd.ms-excel'}
+CSV_PREVIEW_EXTENSIONS = {'.csv'}
+AUDIO_PREVIEW_MIME_TYPES = {'audio/mpeg', 'audio/mp3'}
+AUDIO_PREVIEW_EXTENSIONS = {'.mp3'}
+PDF_PREVIEW_MIME_TYPES = {'application/pdf'}
+PDF_PREVIEW_EXTENSIONS = {'.pdf'}
+OFFICE_PREVIEW_MIME_TYPES = {
+    'application/msword',
+    'application/vnd.ms-excel',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+}
+OFFICE_PREVIEW_EXTENSIONS = {'.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'}
 
 
 def _json_error(message, status):
@@ -103,6 +145,205 @@ def _get_file_or_error(entry_id):
         return FileEntry.objects.select_related('owner', 'file_object').get(pk=entry_id)
     except FileEntry.DoesNotExist:
         return None
+
+
+def _is_text_preview_supported(entry):
+    mime_type = (entry.mime_type or entry.file_object.mime_type or '').lower()
+    name = entry.name.lower()
+
+    return (
+        mime_type.startswith('text/')
+        or mime_type in {'application/json', 'application/xml', 'application/javascript'}
+        or any(name.endswith(extension) for extension in TEXT_PREVIEW_EXTENSIONS)
+    )
+
+
+def _is_csv_preview_supported(entry):
+    mime_type = (entry.mime_type or entry.file_object.mime_type or '').lower()
+    name = entry.name.lower()
+
+    return (
+        mime_type in CSV_PREVIEW_MIME_TYPES
+        or any(name.endswith(extension) for extension in CSV_PREVIEW_EXTENSIONS)
+    )
+
+
+def _is_image_preview_supported(entry):
+    mime_type = (entry.mime_type or entry.file_object.mime_type or '').lower()
+    name = entry.name.lower()
+
+    return (
+        mime_type in IMAGE_PREVIEW_MIME_TYPES
+        or any(name.endswith(extension) for extension in IMAGE_PREVIEW_EXTENSIONS)
+    )
+
+
+def _is_audio_preview_supported(entry):
+    mime_type = (entry.mime_type or entry.file_object.mime_type or '').lower()
+    name = entry.name.lower()
+
+    return (
+        mime_type in AUDIO_PREVIEW_MIME_TYPES
+        or any(name.endswith(extension) for extension in AUDIO_PREVIEW_EXTENSIONS)
+    )
+
+
+def _is_pdf_preview_supported(entry):
+    mime_type = (entry.mime_type or entry.file_object.mime_type or '').lower()
+    name = entry.name.lower()
+
+    return (
+        mime_type in PDF_PREVIEW_MIME_TYPES
+        or any(name.endswith(extension) for extension in PDF_PREVIEW_EXTENSIONS)
+    )
+
+
+def _is_office_preview_supported(entry):
+    mime_type = (entry.mime_type or entry.file_object.mime_type or '').lower()
+    name = entry.name.lower()
+
+    return (
+        mime_type in OFFICE_PREVIEW_MIME_TYPES
+        or any(name.endswith(extension) for extension in OFFICE_PREVIEW_EXTENSIONS)
+    )
+
+
+def _is_inline_preview_content_supported(entry):
+    return (
+        _is_image_preview_supported(entry)
+        or _is_audio_preview_supported(entry)
+        or _is_pdf_preview_supported(entry)
+        or _is_office_preview_supported(entry)
+    )
+
+
+def _preview_content_type(entry):
+    if _is_audio_preview_supported(entry):
+        return entry.mime_type or entry.file_object.mime_type or 'audio/mpeg'
+
+    if _is_pdf_preview_supported(entry):
+        return entry.mime_type or entry.file_object.mime_type or 'application/pdf'
+
+    if _is_office_preview_supported(entry):
+        return 'application/pdf'
+
+    return entry.mime_type or entry.file_object.mime_type or 'image/png'
+
+
+def _get_preview_cache_root():
+    root = Path(settings.SMARTMEDIADISK_PREVIEW_CACHE_PATH)
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _find_libreoffice_command():
+    configured = getattr(settings, 'SMARTMEDIADISK_LIBREOFFICE_PATH', '')
+    if configured:
+        return configured
+
+    return shutil.which('soffice') or shutil.which('libreoffice')
+
+
+def _converted_pdf_cache_path(entry):
+    suffix = Path(entry.name).suffix.lower().lstrip('.') or 'office'
+    return _get_preview_cache_root() / f'{entry.file_object.sha256}-{suffix}.pdf'
+
+
+def _convert_office_to_pdf(entry):
+    cache_path = _converted_pdf_cache_path(entry)
+    if cache_path.exists():
+        return cache_path
+
+    command = _find_libreoffice_command()
+    if not command:
+        raise RuntimeError('LibreOffice executable was not found.')
+
+    source_path = get_physical_path(entry.file_object)
+    source_suffix = Path(entry.name).suffix or '.office'
+    cache_root = _get_preview_cache_root()
+    with tempfile.TemporaryDirectory(prefix='office-preview-', dir=cache_root) as work_dir_name:
+        work_dir = Path(work_dir_name)
+        profile_dir = work_dir / 'profile'
+        profile_dir.mkdir(parents=True, exist_ok=True)
+        temp_source = work_dir / f'source{source_suffix}'
+        shutil.copy2(source_path, temp_source)
+
+        result = subprocess.run(
+            [
+                command,
+                '--headless',
+                f'-env:UserInstallation={profile_dir.resolve().as_uri()}',
+                '--convert-to',
+                'pdf',
+                '--outdir',
+                str(work_dir),
+                str(temp_source),
+            ],
+            capture_output=True,
+            check=False,
+            text=True,
+            timeout=getattr(settings, 'SMARTMEDIADISK_PREVIEW_CONVERSION_TIMEOUT', 60),
+        )
+        converted_path = temp_source.with_suffix('.pdf')
+        if not converted_path.exists():
+            converted_files = list(work_dir.glob('*.pdf'))
+            converted_path = converted_files[0] if converted_files else converted_path
+
+        if result.returncode != 0 or not converted_path.exists():
+            detail = (result.stderr or result.stdout or 'Unknown conversion error.').strip()
+            raise RuntimeError(f'LibreOffice failed to convert the document: {detail}')
+
+        shutil.move(str(converted_path), cache_path)
+
+    return cache_path
+
+
+def _preview_content_path(entry):
+    if _is_office_preview_supported(entry):
+        return _convert_office_to_pdf(entry)
+
+    return get_physical_path(entry.file_object)
+
+
+def _decode_text_preview(raw_content):
+    for encoding in ('utf-8-sig', 'gb18030'):
+        try:
+            return raw_content.decode(encoding), encoding
+        except UnicodeDecodeError:
+            continue
+
+    return raw_content.decode('utf-8', errors='replace'), 'utf-8'
+
+
+def _detect_csv_dialect(text):
+    sample = text[:4096]
+    try:
+        return csv.Sniffer().sniff(sample, delimiters=',\t;')
+    except csv.Error:
+        dialect = csv.excel_tab if '\t' in sample and ',' not in sample else csv.excel
+        return dialect
+
+
+def _build_csv_preview(text):
+    dialect = _detect_csv_dialect(text)
+    reader = csv.reader(StringIO(text), dialect)
+    rows = []
+    truncated_rows = False
+
+    for row in reader:
+        if len(rows) >= CSV_PREVIEW_MAX_ROWS:
+            truncated_rows = True
+            break
+
+        rows.append(row)
+
+    return {
+        'type': 'csv',
+        'rows': rows,
+        'delimiter': dialect.delimiter,
+        'truncated_rows': truncated_rows,
+        'max_rows': CSV_PREVIEW_MAX_ROWS,
+    }
 
 
 @require_GET
@@ -208,6 +449,154 @@ def download_file(request, entry_id):
         content_type=entry.mime_type or entry.file_object.mime_type or 'application/octet-stream',
     )
     return response
+
+
+@require_GET
+def preview_file(request, entry_id):
+    """Return preview metadata for a file when the user has permission."""
+    auth_error = _require_authenticated(request)
+    if auth_error:
+        return auth_error
+
+    entry = _get_file_or_error(entry_id)
+    if entry is None:
+        return _json_error('File not found.', 404)
+
+    if not can_preview_file(request.user, entry):
+        return _json_error('Permission denied.', 403)
+
+    if _is_image_preview_supported(entry):
+        return JsonResponse(
+            {
+                'status': 'success',
+                'data': {
+                    'file': _serialize_file(entry),
+                    'preview': {
+                        'type': 'image',
+                        'content_url': f'/api/files/{entry.id}/preview/content/',
+                    },
+                },
+            }
+        )
+
+    if _is_audio_preview_supported(entry):
+        return JsonResponse(
+            {
+                'status': 'success',
+                'data': {
+                    'file': _serialize_file(entry),
+                    'preview': {
+                        'type': 'audio',
+                        'content_url': f'/api/files/{entry.id}/preview/content/',
+                    },
+                },
+            }
+        )
+
+    if _is_pdf_preview_supported(entry):
+        return JsonResponse(
+            {
+                'status': 'success',
+                'data': {
+                    'file': _serialize_file(entry),
+                    'preview': {
+                        'type': 'pdf',
+                        'content_url': f'/api/files/{entry.id}/preview/content/',
+                    },
+                },
+            }
+        )
+
+    if _is_office_preview_supported(entry):
+        return JsonResponse(
+            {
+                'status': 'success',
+                'data': {
+                    'file': _serialize_file(entry),
+                    'preview': {
+                        'type': 'pdf',
+                        'content_url': f'/api/files/{entry.id}/preview/content/',
+                        'converted': True,
+                    },
+                },
+            }
+        )
+
+    physical_path = get_physical_path(entry.file_object)
+    with physical_path.open('rb') as source:
+        raw_content = source.read(TEXT_PREVIEW_MAX_BYTES + 1)
+
+    is_truncated = len(raw_content) > TEXT_PREVIEW_MAX_BYTES
+    if is_truncated:
+        raw_content = raw_content[:TEXT_PREVIEW_MAX_BYTES]
+
+    text, encoding = _decode_text_preview(raw_content)
+    if _is_csv_preview_supported(entry):
+        preview = _build_csv_preview(text)
+        preview['encoding'] = encoding
+        preview['truncated'] = is_truncated
+        preview['max_bytes'] = TEXT_PREVIEW_MAX_BYTES
+        return JsonResponse(
+            {
+                'status': 'success',
+                'data': {
+                    'file': _serialize_file(entry),
+                    'preview': preview,
+                },
+            }
+        )
+
+    if not _is_text_preview_supported(entry):
+        return _json_error('This file type is not supported for preview yet.', 415)
+
+    return JsonResponse(
+        {
+            'status': 'success',
+            'data': {
+                'file': _serialize_file(entry),
+                'preview': {
+                    'type': 'text',
+                    'content': text,
+                    'encoding': encoding,
+                    'truncated': is_truncated,
+                    'max_bytes': TEXT_PREVIEW_MAX_BYTES,
+                },
+            },
+        }
+    )
+
+
+@require_GET
+def preview_file_content(request, entry_id):
+    """Stream inline preview content when the user has permission."""
+    auth_error = _require_authenticated(request)
+    if auth_error:
+        return auth_error
+
+    entry = _get_file_or_error(entry_id)
+    if entry is None:
+        return _json_error('File not found.', 404)
+
+    if not can_preview_file(request.user, entry):
+        return _json_error('Permission denied.', 403)
+
+    if not _is_inline_preview_content_supported(entry):
+        return _json_error('This file type is not supported for inline preview content.', 415)
+
+    try:
+        content_path = _preview_content_path(entry)
+    except subprocess.TimeoutExpired:
+        return _json_error('Document preview conversion timed out.', 504)
+    except RuntimeError as error:
+        return _json_error(str(error), 500)
+
+    response_filename = f'{Path(entry.name).stem}.pdf' if _is_office_preview_supported(entry) else entry.name
+    return FileResponse(
+        content_path.open('rb'),
+        as_attachment=False,
+        filename=response_filename,
+        content_type=_preview_content_type(entry),
+    )
 
 
 @csrf_exempt

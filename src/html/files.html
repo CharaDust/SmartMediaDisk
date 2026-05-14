@@ -78,6 +78,45 @@
         </div>
     </main>
 
+    <div class="modal fade" id="file-preview-modal" tabindex="-1" aria-labelledby="file-preview-title" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h2 class="modal-title fs-5" id="file-preview-title">文件预览</h2>
+                        <div class="small text-secondary" id="file-preview-meta"></div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <pre class="bg-body-tertiary border rounded p-3 mb-0 overflow-auto" id="file-preview-text"><code id="file-preview-content"></code></pre>
+                    <div class="text-center d-none" id="file-preview-image-wrap">
+                        <img class="img-fluid rounded border" id="file-preview-image" alt="文件预览">
+                    </div>
+                    <div class="table-responsive d-none" id="file-preview-csv-wrap">
+                        <table class="table table-sm table-striped table-hover align-middle mb-0">
+                            <thead id="file-preview-csv-head"></thead>
+                            <tbody id="file-preview-csv-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="d-none" id="file-preview-audio-wrap">
+                        <audio class="w-100" id="file-preview-audio" controls preload="metadata"></audio>
+                    </div>
+                    <div class="d-none" id="file-preview-pdf-wrap">
+                        <iframe class="w-100 border rounded" id="file-preview-pdf" title="PDF 预览" style="height: 70vh;"></iframe>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-outline-secondary" id="file-preview-download" href="#">
+                        <i class="bi bi-download"></i>
+                        下载
+                    </a>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/js/api/files.js"></script>
     <script src="/js/files-page.js"></script>
 </body>

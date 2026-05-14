@@ -131,6 +131,45 @@
     }
 
     /**
+     * Fetch a preview payload for a file row.
+     *
+     * @param {object} item File row object.
+     * @returns {Promise<object>} Preview payload.
+     */
+    async function previewItem(item) {
+        const response = await fetch(`/api/files/${item.id}/preview/`, {
+            credentials: 'same-origin'
+        });
+        return parseResponse(response);
+    }
+
+    /**
+     * Fetch inline preview content as a Blob.
+     *
+     * @param {string} url Inline preview content URL.
+     * @returns {Promise<Blob>} Preview content blob.
+     */
+    async function previewContentBlob(url) {
+        const response = await fetch(url, {
+            credentials: 'same-origin'
+        });
+        if (response.ok) {
+            return response.blob();
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        let message = `Request failed with status ${response.status}.`;
+        if (contentType.includes('application/json')) {
+            const result = await response.json();
+            message = result.message || message;
+        }
+
+        const error = new Error(message);
+        error.status = response.status;
+        throw error;
+    }
+
+    /**
      * Build a download URL for a file row.
      *
      * @param {object} item File row object.
@@ -147,6 +186,8 @@
         renameItem,
         moveItem,
         deleteItem,
+        previewItem,
+        previewContentBlob,
         downloadUrl
     };
 }());

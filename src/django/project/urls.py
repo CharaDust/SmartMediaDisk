@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/', include('helloworld.urls')),
     path('api/signin/', include('sign.urls')),
     path('api/account/', include('sign.account_urls')),
+    path('api/users/', include('sign.user_urls')),
     path('api/permissions/', include('sign.permission_urls')),
     path('api/files/', include('files.urls')),
     path('api/random32767/', include('random32767.urls')), # 自定义app

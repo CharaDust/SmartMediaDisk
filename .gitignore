@@ -5,3 +5,5 @@
 src/django/db.sqlite3
 src/django/db/
 bin/dev-lin-remote.bat
+/tmp
+/data/preview-cache/

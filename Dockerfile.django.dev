@@ -9,7 +9,12 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
+        fonts-liberation \
+        fonts-noto-cjk \
         libpq-dev \
+        libreoffice-calc \
+        libreoffice-impress \
+        libreoffice-writer \
     && rm -rf /var/lib/apt/lists/*
 
 # 设置工作目录
