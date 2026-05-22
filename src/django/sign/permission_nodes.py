@@ -36,6 +36,12 @@ PERMISSION_NODES = [
         'description': '允许修改用户基础资料、启停状态。',
     },
     {
+        'node': 'users.delete',
+        'label': '删除用户',
+        'category': '用户',
+        'description': '允许删除普通用户；root 用户受系统保护，不能删除。',
+    },
+    {
         'node': 'users.password.reset',
         'label': '重置用户密码',
         'category': '用户',
@@ -78,24 +84,6 @@ PERMISSION_NODES = [
         'description': '允许列出指定路径文件。',
     },
     {
-        'node': 'files.read.own',
-        'label': '读取自己的文件',
-        'category': '文件',
-        'description': '允许预览或读取当前用户自己的文件内容。',
-    },
-    {
-        'node': 'files.read.all',
-        'label': '读取全部文件',
-        'category': '文件',
-        'description': '允许预览或读取所有用户文件内容。',
-    },
-    {
-        'node': 'files.read.path.?',
-        'label': '读取指定路径文件',
-        'category': '文件',
-        'description': '允许预览或读取指定路径文件内容。',
-    },
-    {
         'node': 'files.upload.own',
         'label': '上传自己的文件',
         'category': '文件',
@@ -109,21 +97,21 @@ PERMISSION_NODES = [
     },
     {
         'node': 'files.download.own',
-        'label': '下载自己的文件',
+        'label': '读取/下载自己的文件',
         'category': '文件',
-        'description': '允许下载当前用户自己的文件。',
+        'description': '允许预览、读取或下载当前用户自己的文件内容。',
     },
     {
         'node': 'files.download.all',
-        'label': '下载全部文件',
+        'label': '读取/下载全部文件',
         'category': '文件',
-        'description': '允许下载所有用户文件。',
+        'description': '允许预览、读取或下载所有用户文件内容。',
     },
     {
         'node': 'files.download.path.?',
-        'label': '下载指定路径文件',
+        'label': '读取/下载指定路径文件',
         'category': '文件',
-        'description': '允许下载指定路径文件。',
+        'description': '允许预览、读取或下载指定路径文件内容。',
     },
     {
         'node': 'files.rename.own',
@@ -245,6 +233,12 @@ PERMISSION_NODES = [
         'category': '系统',
         'description': '允许查看健康检查、运行状态等只读系统信息。',
     },
+]
+
+DEPRECATED_PERMISSION_NODES = [
+    'files.read.own',
+    'files.read.all',
+    'files.read.path.?',
 ]
 
 

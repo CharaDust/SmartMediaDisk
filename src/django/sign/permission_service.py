@@ -3,7 +3,7 @@ import re
 from django.db import transaction
 
 from .models import PermissionNode, UserPermission
-from .permission_nodes import PERMISSION_NODES
+from .permission_nodes import DEPRECATED_PERMISSION_NODES, PERMISSION_NODES
 
 
 NODE_PATTERN = re.compile(r'^[a-z0-9_?*-]+(?:\.[a-z0-9_?*-]+)*$')
@@ -18,6 +18,9 @@ def is_root_user(user):
 
 def ensure_permission_nodes():
     """Upsert built-in permission node metadata."""
+    PermissionNode.objects.filter(node__in=DEPRECATED_PERMISSION_NODES).update(is_active=False)
+    UserPermission.objects.filter(node__in=DEPRECATED_PERMISSION_NODES).delete()
+
     for item in PERMISSION_NODES:
         PermissionNode.objects.update_or_create(
             node=item['node'],

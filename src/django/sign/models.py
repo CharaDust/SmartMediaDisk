@@ -36,6 +36,20 @@ class UserPermission(models.Model):
         return f'{self.user}:{self.node}={state}'
 
 
+class UserStorageQuota(models.Model):
+    """Storage quota assigned to a user."""
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='storage_quota')
+    quota_bytes = models.BigIntegerField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['user_id']
+
+    def __str__(self):
+        quota = 'unlimited' if self.quota_bytes is None else f'{self.quota_bytes} bytes'
+        return f'{self.user}:{quota}'
+
+
 class SiteSetting(models.Model):
     key = models.CharField(max_length=100, unique=True)
     value = models.TextField(blank=True)

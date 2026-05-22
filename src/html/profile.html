@@ -63,6 +63,14 @@
                                 <div class="account-value" id="accountEmail">-</div>
                             </div>
                             <div class="mb-3">
+                                <div class="account-label">容量</div>
+                                <div class="account-value" id="accountQuota">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="account-label">已用 / 剩余</div>
+                                <div class="account-value" id="accountStorageUsage">-</div>
+                            </div>
+                            <div class="mb-3">
                                 <div class="account-label">角色标记</div>
                                 <div class="d-flex gap-2 mt-1">
                                     <span class="badge text-bg-secondary" id="staffBadge">staff false</span>
@@ -164,6 +172,8 @@
             accountId: document.getElementById('accountId'),
             accountUsername: document.getElementById('accountUsername'),
             accountEmail: document.getElementById('accountEmail'),
+            accountQuota: document.getElementById('accountQuota'),
+            accountStorageUsage: document.getElementById('accountStorageUsage'),
             staffBadge: document.getElementById('staffBadge'),
             superuserBadge: document.getElementById('superuserBadge'),
             accountJoined: document.getElementById('accountJoined'),
@@ -195,6 +205,30 @@
             }
 
             return new Date(value).toLocaleString('zh-CN');
+        }
+
+        function formatSize(size) {
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let value = Number(size) || 0;
+            let index = 0;
+            while (value >= 1024 && index < units.length - 1) {
+                value /= 1024;
+                index += 1;
+            }
+
+            return `${value.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+        }
+
+        function renderStorage(storage) {
+            if (!storage) {
+                elements.accountQuota.textContent = '-';
+                elements.accountStorageUsage.textContent = '-';
+                return;
+            }
+
+            elements.accountQuota.textContent = storage.is_unlimited ? '不限容量' : formatSize(storage.quota_bytes);
+            const available = storage.is_unlimited ? '不限' : formatSize(storage.available_bytes);
+            elements.accountStorageUsage.textContent = `${formatSize(storage.used_bytes)} / ${available}`;
         }
 
         function setPermissionBadge(element, allowed) {
@@ -238,6 +272,7 @@
             elements.accountId.textContent = account.id;
             elements.accountUsername.textContent = account.username;
             elements.accountEmail.textContent = account.email || '-';
+            renderStorage(account.storage);
             elements.staffBadge.textContent = `staff ${account.is_staff}`;
             elements.staffBadge.className = account.is_staff ? 'badge text-bg-info' : 'badge text-bg-secondary';
             elements.superuserBadge.textContent = `superuser ${account.is_superuser}`;

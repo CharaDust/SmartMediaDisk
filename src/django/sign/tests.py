@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .models import SiteSetting, UserPermission
+from .models import SiteSetting, UserPermission, UserStorageQuota
 
 
 class SignApiTests(TestCase):
@@ -93,7 +93,7 @@ class SignApiTests(TestCase):
         self.client.logout()
         self.client.login(username='user', password='123456')
 
-        allowed_response = self.client.get('/api/permissions/check/?node=files.read.own')
+        allowed_response = self.client.get('/api/permissions/check/?node=files.download.own')
         denied_response = self.client.get('/api/permissions/check/?node=files.delete.own')
 
         self.assertTrue(allowed_response.json()['data']['allowed'])
@@ -101,6 +101,7 @@ class SignApiTests(TestCase):
 
     def test_account_detail_reports_self_update_permissions(self):
         UserPermission.objects.create(user=self.user, node='account.username.update', value=True)
+        UserStorageQuota.objects.create(user=self.user, quota_bytes=1024)
         self.client.login(username='root', password='123456')
 
         response = self.client.get('/api/account/')
@@ -111,6 +112,8 @@ class SignApiTests(TestCase):
         self.assertTrue(payload['data']['account']['permissions']['can_update_password'])
         self.assertTrue(payload['data']['account']['permissions']['can_update_navbar_title'])
         self.assertEqual(payload['data']['account']['settings']['navbar_title'], 'Media Cube')
+        self.assertEqual(payload['data']['account']['storage']['quota_bytes'], 1024)
+        self.assertEqual(payload['data']['account']['storage']['used_bytes'], 0)
 
     def test_navbar_title_defaults_to_media_cube(self):
         response = self.client.get('/api/account/navbar-title/')
@@ -200,3 +203,116 @@ class SignApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse('_auth_user_id' in self.client.session)
         self.assertTrue(self.client.login(username='user', password='abcdef'))
+
+    def test_user_list_requires_permission(self):
+        user_model = get_user_model()
+        normal_user, _ = user_model.objects.get_or_create(username='user')
+        normal_user.set_password('123456')
+        normal_user.save()
+        self.client.login(username='user', password='123456')
+
+        denied_response = self.client.get('/api/users/')
+        self.assertEqual(denied_response.status_code, 403)
+
+        UserPermission.objects.create(user=normal_user, node='users.read', value=True)
+        allowed_response = self.client.get('/api/users/')
+        payload = allowed_response.json()
+
+        self.assertEqual(allowed_response.status_code, 200)
+        self.assertTrue(any(user['username'] == 'root' for user in payload['data']['users']))
+
+    def test_create_update_delete_user_management_flow(self):
+        self.client.login(username='root', password='123456')
+
+        create_response = self.client.post(
+            '/api/users/create/',
+            data=json.dumps(
+                {
+                    'username': 'managed',
+                    'email': 'managed@example.com',
+                    'password': 'abcdef',
+                    'quotaBytes': 1048576,
+                    'isActive': True,
+                }
+            ),
+            content_type='application/json',
+        )
+        created_payload = create_response.json()
+        created_id = created_payload['data']['user']['id']
+
+        self.assertEqual(create_response.status_code, 201)
+        self.assertEqual(created_payload['data']['user']['storage']['quota_bytes'], 1048576)
+        self.assertTrue(self.client.login(username='managed', password='abcdef'))
+
+        self.client.login(username='root', password='123456')
+        update_response = self.client.put(
+            f'/api/users/{created_id}/',
+            data=json.dumps(
+                {
+                    'username': 'managed-renamed',
+                    'email': 'renamed@example.com',
+                    'quotaBytes': None,
+                    'isActive': False,
+                }
+            ),
+            content_type='application/json',
+        )
+        updated_payload = update_response.json()
+
+        self.assertEqual(update_response.status_code, 200)
+        self.assertEqual(updated_payload['data']['user']['username'], 'managed-renamed')
+        self.assertTrue(updated_payload['data']['user']['storage']['is_unlimited'])
+        self.assertFalse(updated_payload['data']['user']['is_active'])
+
+        delete_response = self.client.delete(f'/api/users/{created_id}/')
+
+        self.assertEqual(delete_response.status_code, 200)
+        self.assertFalse(get_user_model().objects.filter(username='managed-renamed').exists())
+
+    def test_root_user_cannot_be_renamed_or_deleted_by_user_management(self):
+        self.client.login(username='root', password='123456')
+
+        rename_response = self.client.put(
+            f'/api/users/{self.user.id}/',
+            data=json.dumps(
+                {
+                    'username': 'admin-root',
+                    'email': '',
+                    'isActive': True,
+                }
+            ),
+            content_type='application/json',
+        )
+        delete_response = self.client.delete(f'/api/users/{self.user.id}/')
+        self.user.refresh_from_db()
+
+        self.assertEqual(rename_response.status_code, 403)
+        self.assertEqual(delete_response.status_code, 403)
+        self.assertEqual(self.user.username, 'root')
+
+    def test_reset_user_password_requires_permission(self):
+        user_model = get_user_model()
+        manager, _ = user_model.objects.get_or_create(username='manager')
+        manager.set_password('123456')
+        manager.save()
+        target, _ = user_model.objects.get_or_create(username='target')
+        target.set_password('123456')
+        target.save()
+        self.client.login(username='manager', password='123456')
+
+        denied_response = self.client.post(
+            f'/api/users/{target.id}/password/',
+            data=json.dumps({'newPassword': 'abcdef'}),
+            content_type='application/json',
+        )
+        self.assertEqual(denied_response.status_code, 403)
+
+        UserPermission.objects.create(user=manager, node='users.password.reset', value=True)
+        allowed_response = self.client.post(
+            f'/api/users/{target.id}/password/',
+            data=json.dumps({'newPassword': 'abcdef'}),
+            content_type='application/json',
+        )
+
+        self.assertEqual(allowed_response.status_code, 200)
+        self.assertTrue(self.client.login(username='target', password='abcdef'))

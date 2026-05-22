@@ -22,6 +22,7 @@ services:
       - SMARTMEDIADISK_SQLITE_PATH=/app/db/db.sqlite3
       - SMARTMEDIADISK_STORAGE_PATH=/app/data/storage
       - SMARTMEDIADISK_UPLOAD_TEMP_PATH=/app/data/upload-tmp
+      - SMARTMEDIADISK_PREVIEW_CACHE_PATH=/app/data/preview-cache
       - DATA_UPLOAD_MAX_MEMORY_SIZE=2147483648
       - FILE_UPLOAD_MAX_MEMORY_SIZE=10485760
 

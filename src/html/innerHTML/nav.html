@@ -18,38 +18,72 @@
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                     <li class="nav-item">
-                        <a class="nav-link" href="/index.html">浏览</a>
+                        <a class="nav-link" href="/index.html">主页</a>
                     </li>
                     <li class="nav-item d-none" data-permission-required="files.list.own">
                         <a class="nav-link" href="/files.html">文件</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">传输</a>
+                    <li class="nav-item dropdown d-none" data-auth-user>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            邮件
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/mail-inbox.html">收件箱</a></li>
+                            <li><a class="dropdown-item" href="/page/form.html">发送邮件</a></li>
+                        </ul>
                     </li>
+                    <!-- <li class="nav-item"> -->
+                        <!-- <a class="nav-link" href="#">传输</a> -->
+                    <!-- </li> -->
                     <li class="nav-item d-none" data-auth-user>
                         <a class="nav-link" href="/profile.html">个人中心</a>
                     </li>
-                    <li class="nav-item d-none" data-permission-required="permissions.table.edit">
-                        <a class="nav-link" href="/permissions.html">权限</a>
+                    <li class="nav-item dropdown d-none"
+                        data-permission-any-required="users.read,permissions.table.edit">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            管理
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="d-none" data-permission-required="users.read">
+                                <a class="dropdown-item" href="/users.html">用户</a>
+                            </li>
+                            <li class="d-none" data-permission-required="permissions.table.edit">
+                                <a class="dropdown-item" href="/permissions.html">权限</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            快速功能
+                            站长工具
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/test/ssi.html">SSI 测试</a></li>
-                            <li><a class="dropdown-item" href="/test/db.html">数据库测试</a></li>
+                            <!-- <li><a class="dropdown-item" href="/test/ssi.html">SSI 测试</a></li> -->
+                            <!-- <li><a class="dropdown-item" href="/test/db.html">数据库测试</a></li> -->
+                            <li><a class="dropdown-item" href="/page/empty.html?site=bpm">音乐节奏测试</a></li>
+                            <li><a class="dropdown-item" href="/page/empty.html?site=speedtest">网络速度测试</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="/page/initial.html">原始测试</a></li>
-                            <li><a class="dropdown-item" href="/page/bootstrap.html">栅格测试</a></li>
-                            <li><a class="dropdown-item" href="/page/form.html">表单测试</a></li>
+                            <li><a class="dropdown-item" href="/page/empty.html?site=compumuseum">计算机博物馆</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="/page/items.html">动态表单测试</a></li>
+                            <li><a class="dropdown-item" href="/page/empty.html?site=english-name">英文名生成</a></li>
+                            <li><a class="dropdown-item" href="/page/empty.html?site=english-signature">英文签字生成</a></li>
+                            <li><a class="dropdown-item" href="/page/empty.html?site=setting-generator">设定生成</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <!-- <li><a class="dropdown-item" href="/page/initial.html">原始测试</a></li> -->
+                            <!-- <li><a class="dropdown-item" href="/page/bootstrap.html">栅格测试</a></li> -->
+                            <!-- <li><a class="dropdown-item" href="/page/form.html">表单测试</a></li> -->
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <!-- <li><a class="dropdown-item" href="/page/items.html">动态表单测试</a></li> -->
                         </ul>
                     </li>
                     <li class="nav-item" data-auth-guest>
@@ -66,4 +100,4 @@
     </div>
 </nav>
 <div class="container" style="height: 56px;"></div>
-<script src="/js/auth.js?v=20260509-navbar-title" defer></script>
+<script src="/js/auth.js?v=20260520-management" defer></script>

@@ -29,10 +29,15 @@
      * List files and directories under a logical path.
      *
      * @param {string} path Logical directory path.
+     * @param {string} search Optional name search keyword.
      * @returns {Promise<object>} Directory listing payload.
      */
-    async function list(path) {
+    async function list(path, search) {
         const query = new URLSearchParams({ path: path || '/' });
+        if (search) {
+            query.set('search', search);
+        }
+
         const response = await fetch(`/api/files/?${query.toString()}`, {
             credentials: 'same-origin'
         });
@@ -131,6 +136,71 @@
     }
 
     /**
+     * Fetch storage usage and quota details for the current user.
+     *
+     * @returns {Promise<object>} Storage summary payload.
+     */
+    async function storageSummary() {
+        const response = await fetch('/api/files/storage/', {
+            credentials: 'same-origin'
+        });
+        return parseResponse(response);
+    }
+
+    /**
+     * Fetch random previewable files for the current user.
+     *
+     * @param {number} limit Maximum number of files to return.
+     * @returns {Promise<object>} Random file payload.
+     */
+    async function random(limit) {
+        const query = new URLSearchParams({ limit: String(limit || 8) });
+        const response = await fetch(`/api/files/random/?${query.toString()}`, {
+            credentials: 'same-origin'
+        });
+        return parseResponse(response);
+    }
+
+    /**
+     * Fetch a preview payload for a file row.
+     *
+     * @param {object} item File row object.
+     * @returns {Promise<object>} Preview payload.
+     */
+    async function previewItem(item) {
+        const response = await fetch(`/api/files/${item.id}/preview/`, {
+            credentials: 'same-origin'
+        });
+        return parseResponse(response);
+    }
+
+    /**
+     * Fetch inline preview content as a Blob.
+     *
+     * @param {string} url Inline preview content URL.
+     * @returns {Promise<Blob>} Preview content blob.
+     */
+    async function previewContentBlob(url) {
+        const response = await fetch(url, {
+            credentials: 'same-origin'
+        });
+        if (response.ok) {
+            return response.blob();
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        let message = `Request failed with status ${response.status}.`;
+        if (contentType.includes('application/json')) {
+            const result = await response.json();
+            message = result.message || message;
+        }
+
+        const error = new Error(message);
+        error.status = response.status;
+        throw error;
+    }
+
+    /**
      * Build a download URL for a file row.
      *
      * @param {object} item File row object.
@@ -142,11 +212,15 @@
 
     window.SmartMediaDiskFilesApi = {
         list,
+        random,
+        storageSummary,
         upload,
         createDirectory,
         renameItem,
         moveItem,
         deleteItem,
+        previewItem,
+        previewContentBlob,
         downloadUrl
     };
 }());

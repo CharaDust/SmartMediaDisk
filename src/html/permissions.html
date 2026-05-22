@@ -505,7 +505,10 @@
                 setControlsEnabled(true);
 
                 if (state.users.length) {
-                    await loadUser(state.users[0].id);
+                    const params = new URLSearchParams(window.location.search);
+                    const requestedUserId = params.get('userId');
+                    const requestedUser = state.users.find((user) => String(user.id) === requestedUserId);
+                    await loadUser((requestedUser || state.users[0]).id);
                 }
             } catch (error) {
                 setMessage(error.message, 'danger');
