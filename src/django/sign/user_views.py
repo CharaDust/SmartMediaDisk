@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from .permission_service import is_root_user, user_has_permission
+from .quota_service import get_user_storage_summary, normalize_quota_bytes, set_user_quota_bytes
 
 
 READ_PERMISSION = 'users.read'
@@ -70,6 +71,7 @@ def _serialize_user(user):
         'is_root': is_root_user(user),
         'date_joined': user.date_joined.isoformat(),
         'last_login': user.last_login.isoformat() if user.last_login else None,
+        'storage': get_user_storage_summary(user),
     }
 
 
@@ -100,6 +102,16 @@ def _validate_password(password):
         return _json_error(f'Password must be at least {MIN_PASSWORD_LENGTH} characters.', 400)
 
     return None
+
+
+def _read_quota_payload(payload):
+    if 'quotaBytes' not in payload:
+        return None, None
+
+    try:
+        return normalize_quota_bytes(payload.get('quotaBytes')), None
+    except ValueError as error:
+        return None, _json_error(str(error), 400)
 
 
 @require_GET
@@ -143,6 +155,10 @@ def create_user(request):
     if password_error:
         return password_error
 
+    quota_bytes, quota_error = _read_quota_payload(payload)
+    if quota_error:
+        return quota_error
+
     User = get_user_model()
     user = User(
         **{
@@ -153,6 +169,8 @@ def create_user(request):
     )
     user.set_password(password)
     user.save()
+    if 'quotaBytes' in payload:
+        set_user_quota_bytes(user, quota_bytes)
 
     return JsonResponse(
         {
@@ -209,6 +227,10 @@ def user_detail(request, user_id):
     if payload is None:
         return _json_error('Invalid JSON payload.', 400)
 
+    quota_bytes, quota_error = _read_quota_payload(payload)
+    if quota_error:
+        return quota_error
+
     username = (payload.get('username', user.get_username()) or '').strip()
     if is_root_user(user) and username != user.get_username():
         return _json_error('The root username is locked and cannot be changed.', 403)
@@ -239,6 +261,9 @@ def user_detail(request, user_id):
 
     if update_fields:
         user.save(update_fields=update_fields)
+
+    if 'quotaBytes' in payload:
+        set_user_quota_bytes(user, quota_bytes)
 
     return JsonResponse(
         {

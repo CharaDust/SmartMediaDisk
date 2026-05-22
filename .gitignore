@@ -2,8 +2,11 @@
 */.DS_Store
 **/.DS_Store
 .obsidian/workspace.json
+**/__pycache__/
+*.py[cod]
 src/django/db.sqlite3
 src/django/db/
 bin/dev-lin-remote.bat
 /tmp
+/data/minecraft-assets/
 /data/preview-cache/

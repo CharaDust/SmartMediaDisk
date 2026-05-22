@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .models import SiteSetting, UserPermission
+from .models import SiteSetting, UserPermission, UserStorageQuota
 
 
 class SignApiTests(TestCase):
@@ -93,7 +93,7 @@ class SignApiTests(TestCase):
         self.client.logout()
         self.client.login(username='user', password='123456')
 
-        allowed_response = self.client.get('/api/permissions/check/?node=files.read.own')
+        allowed_response = self.client.get('/api/permissions/check/?node=files.download.own')
         denied_response = self.client.get('/api/permissions/check/?node=files.delete.own')
 
         self.assertTrue(allowed_response.json()['data']['allowed'])
@@ -101,6 +101,7 @@ class SignApiTests(TestCase):
 
     def test_account_detail_reports_self_update_permissions(self):
         UserPermission.objects.create(user=self.user, node='account.username.update', value=True)
+        UserStorageQuota.objects.create(user=self.user, quota_bytes=1024)
         self.client.login(username='root', password='123456')
 
         response = self.client.get('/api/account/')
@@ -111,6 +112,8 @@ class SignApiTests(TestCase):
         self.assertTrue(payload['data']['account']['permissions']['can_update_password'])
         self.assertTrue(payload['data']['account']['permissions']['can_update_navbar_title'])
         self.assertEqual(payload['data']['account']['settings']['navbar_title'], 'Media Cube')
+        self.assertEqual(payload['data']['account']['storage']['quota_bytes'], 1024)
+        self.assertEqual(payload['data']['account']['storage']['used_bytes'], 0)
 
     def test_navbar_title_defaults_to_media_cube(self):
         response = self.client.get('/api/account/navbar-title/')
@@ -228,6 +231,7 @@ class SignApiTests(TestCase):
                     'username': 'managed',
                     'email': 'managed@example.com',
                     'password': 'abcdef',
+                    'quotaBytes': 1048576,
                     'isActive': True,
                 }
             ),
@@ -237,6 +241,7 @@ class SignApiTests(TestCase):
         created_id = created_payload['data']['user']['id']
 
         self.assertEqual(create_response.status_code, 201)
+        self.assertEqual(created_payload['data']['user']['storage']['quota_bytes'], 1048576)
         self.assertTrue(self.client.login(username='managed', password='abcdef'))
 
         self.client.login(username='root', password='123456')
@@ -246,6 +251,7 @@ class SignApiTests(TestCase):
                 {
                     'username': 'managed-renamed',
                     'email': 'renamed@example.com',
+                    'quotaBytes': None,
                     'isActive': False,
                 }
             ),
@@ -255,6 +261,7 @@ class SignApiTests(TestCase):
 
         self.assertEqual(update_response.status_code, 200)
         self.assertEqual(updated_payload['data']['user']['username'], 'managed-renamed')
+        self.assertTrue(updated_payload['data']['user']['storage']['is_unlimited'])
         self.assertFalse(updated_payload['data']['user']['is_active'])
 
         delete_response = self.client.delete(f'/api/users/{created_id}/')

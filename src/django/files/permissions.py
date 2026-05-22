@@ -66,6 +66,11 @@ def can_delete_file(user, entry):
     return _can_access_file(user, entry, 'delete')
 
 
+def can_share_file(user, entry):
+    """Return whether a user can attach a file entry to an internal share mail."""
+    return _can_access_file(user, entry, 'share')
+
+
 def can_manage_directory(user, path, action):
     """Return whether a user can perform a directory-management action."""
     return _can_access_path(user, action, path)

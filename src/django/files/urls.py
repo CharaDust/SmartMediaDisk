@@ -5,6 +5,8 @@ from . import views
 
 urlpatterns = [
     path('', views.list_files, name='files_list'),
+    path('storage/', views.storage_summary, name='files_storage_summary'),
+    path('random/', views.random_files, name='files_random'),
     path('upload/', views.upload_file, name='files_upload'),
     path('directories/', views.create_directory, name='files_create_directory'),
     path('directories/<int:directory_id>/rename/', views.rename_directory, name='files_rename_directory'),

@@ -6,6 +6,7 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
+from sign.quota_service import set_user_quota_bytes
 
 from .models import DirectoryEntry, FileEntry, FileObject
 from .storage_service import create_file_entry
@@ -45,6 +46,27 @@ class FilesApiTests(TestCase):
         self.assertEqual(FileObject.objects.count(), 1)
         self.assertEqual(FileEntry.objects.count(), 2)
         self.assertEqual(FileObject.objects.get().ref_count, 2)
+
+    def test_upload_rejects_files_over_user_storage_quota(self):
+        set_user_quota_bytes(self.user, 4)
+        upload = SimpleUploadedFile('too-large.txt', b'12345', content_type='text/plain')
+
+        response = self.client.post('/api/files/upload/', {'path': '/', 'file': upload})
+
+        self.assertEqual(response.status_code, 413)
+        self.assertEqual(FileEntry.objects.count(), 0)
+
+    def test_upload_counts_existing_usage_against_storage_quota(self):
+        set_user_quota_bytes(self.user, 10)
+        first = SimpleUploadedFile('first.txt', b'12345', content_type='text/plain')
+        second = SimpleUploadedFile('second.txt', b'123456', content_type='text/plain')
+
+        first_response = self.client.post('/api/files/upload/', {'path': '/', 'file': first})
+        second_response = self.client.post('/api/files/upload/', {'path': '/', 'file': second})
+
+        self.assertEqual(first_response.status_code, 201)
+        self.assertEqual(second_response.status_code, 413)
+        self.assertEqual(FileEntry.objects.count(), 1)
 
     def test_delete_collects_physical_file_after_last_reference(self):
         first = SimpleUploadedFile('first.txt', b'same-content', content_type='text/plain')
@@ -96,6 +118,20 @@ class FilesApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(payload['data']['files'][0]['name'], 'shared.txt')
         self.assertEqual(payload['data']['files'][0]['owner']['username'], 'user')
+
+    def test_list_search_filters_current_directory_by_name(self):
+        DirectoryEntry.objects.create(created_by=self.user, parent_path='', name='plans')
+        DirectoryEntry.objects.create(created_by=self.user, parent_path='', name='photos')
+        self.client.post('/api/files/upload/', {'path': '/', 'file': SimpleUploadedFile('plan.txt', b'one')})
+        self.client.post('/api/files/upload/', {'path': '/', 'file': SimpleUploadedFile('photo.txt', b'two')})
+
+        response = self.client.get('/api/files/?path=/&search=plan')
+        payload = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(payload['data']['search'], 'plan')
+        self.assertEqual([item['name'] for item in payload['data']['directories']], ['plans'])
+        self.assertEqual([item['name'] for item in payload['data']['files']], ['plan.txt'])
 
     def test_preview_text_file_returns_content(self):
         upload = SimpleUploadedFile('note.txt', '你好，预览'.encode('utf-8'), content_type='text/plain')

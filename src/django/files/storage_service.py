@@ -121,6 +121,33 @@ def create_file_entry(owner, uploaded_file, parent_path):
 
 
 @transaction.atomic
+def create_file_entry_from_object(owner, file_object, parent_path, name, mime_type=None):
+    """Create a logical file entry that reuses an existing physical file object."""
+    parent_path = normalize_path(parent_path)
+    name = normalize_name(name, 'File name')
+    mime_type = mime_type or file_object.mime_type or guess_mime_type(name)
+
+    if FileEntry.objects.filter(parent_path=parent_path, name=name).exists():
+        raise ValueError('A file with this name already exists in the target directory.')
+
+    file_object = FileObject.objects.select_for_update().get(pk=file_object.pk)
+    max_serial = FileEntry.objects.filter(file_object=file_object).aggregate(Max('serial'))['serial__max'] or 0
+    file_object.ref_count += 1
+    file_object.save(update_fields=['ref_count', 'updated_at'])
+
+    return FileEntry.objects.create(
+        owner=owner,
+        file_object=file_object,
+        parent_path=parent_path,
+        name=name,
+        original_name=name,
+        serial=max_serial + 1,
+        size=file_object.size,
+        mime_type=mime_type,
+    )
+
+
+@transaction.atomic
 def delete_file_entry(entry):
     """Delete a logical file entry and collect unreferenced physical content."""
     file_object = FileObject.objects.select_for_update().get(pk=entry.file_object_id)

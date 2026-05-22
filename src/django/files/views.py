@@ -11,6 +11,8 @@ from django.db import transaction
 from django.http import FileResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods
+from sign.permission_service import is_root_user
+from sign.quota_service import ensure_upload_fits_quota, get_global_storage_summary, get_user_storage_summary
 
 from .models import DirectoryEntry, FileEntry
 from .path_utils import display_path, join_path, normalize_name, normalize_path, split_path
@@ -364,8 +366,13 @@ def list_files(request):
     if not _directory_exists(path):
         return _json_error('Directory not found.', 404)
 
+    search = (request.GET.get('search') or '').strip()
     directories = DirectoryEntry.objects.filter(parent_path=path).select_related('created_by')
     file_queryset = FileEntry.objects.filter(parent_path=path).select_related('owner', 'file_object')
+    if search:
+        directories = directories.filter(name__icontains=search)
+        file_queryset = file_queryset.filter(name__icontains=search)
+
     files = [entry for entry in file_queryset if can_see_file_in_list(request.user, entry)]
 
     return JsonResponse(
@@ -373,8 +380,60 @@ def list_files(request):
             'status': 'success',
             'data': {
                 'path': display_path(path),
+                'search': search,
                 'directories': [_serialize_directory(directory) for directory in directories],
                 'files': [_serialize_file(entry) for entry in files],
+            },
+        }
+    )
+
+
+@require_GET
+def storage_summary(request):
+    """Return storage quota and usage details for the current user."""
+    auth_error = _require_authenticated(request)
+    if auth_error:
+        return auth_error
+
+    data = {
+        'storage': get_user_storage_summary(request.user),
+    }
+    if is_root_user(request.user):
+        data['global_storage'] = get_global_storage_summary()
+
+    return JsonResponse(
+        {
+            'status': 'success',
+            'data': data,
+        }
+    )
+
+
+@require_GET
+def random_files(request):
+    """Return random files the current user can preview."""
+    auth_error = _require_authenticated(request)
+    if auth_error:
+        return auth_error
+
+    try:
+        limit = int(request.GET.get('limit') or 8)
+    except ValueError:
+        limit = 8
+
+    limit = max(1, min(limit, 24))
+    queryset = FileEntry.objects.select_related('owner', 'file_object').order_by('?')[:limit * 4]
+    files = [
+        _serialize_file(entry)
+        for entry in queryset
+        if can_see_file_in_list(request.user, entry) and can_preview_file(request.user, entry)
+    ][:limit]
+
+    return JsonResponse(
+        {
+            'status': 'success',
+            'data': {
+                'files': files,
             },
         }
     )
@@ -410,6 +469,11 @@ def upload_file(request):
 
     if DirectoryEntry.objects.filter(parent_path=parent_path, name=upload_name).exists():
         return _json_error('A directory with this name already exists in the target directory.', 409)
+
+    try:
+        ensure_upload_fits_quota(request.user, uploaded_file.size)
+    except ValueError as error:
+        return _json_error(str(error), 413)
 
     try:
         entry = create_file_entry(request.user, uploaded_file, parent_path)

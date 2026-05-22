@@ -78,6 +78,18 @@
                                     <input type="password" class="form-control" id="createPassword"
                                         autocomplete="new-password" required disabled>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="createQuotaValue" class="form-label">容量</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="createQuotaValue" min="0" step="0.01"
+                                            placeholder="留空不限" disabled>
+                                        <select class="form-select" id="createQuotaUnit" disabled>
+                                            <option value="1048576" selected>MB</option>
+                                            <option value="1073741824">GB</option>
+                                            <option value="1099511627776">TB</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" role="switch" id="createActive" checked
                                         disabled>
@@ -114,6 +126,25 @@
                                         <label for="detailEmail" class="form-label">邮箱</label>
                                         <input type="email" class="form-control" id="detailEmail" disabled>
                                     </div>
+                                    <div class="col-12 col-lg-6">
+                                        <label for="detailQuotaValue" class="form-label">容量</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="detailQuotaValue" min="0"
+                                                step="0.01" disabled>
+                                            <select class="form-select" id="detailQuotaUnit" disabled>
+                                                <option value="1048576" selected>MB</option>
+                                                <option value="1073741824">GB</option>
+                                                <option value="1099511627776">TB</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-6">
+                                        <div class="form-check form-switch mt-lg-4 pt-lg-2">
+                                            <input class="form-check-input" type="checkbox" role="switch"
+                                                id="detailQuotaUnlimited" disabled>
+                                            <label class="form-check-label" for="detailQuotaUnlimited">不限容量</label>
+                                        </div>
+                                    </div>
                                     <div class="col-12">
                                         <div class="d-flex flex-wrap gap-2">
                                             <span class="badge text-bg-secondary" id="rootBadge">root false</span>
@@ -129,6 +160,14 @@
                                     <div class="col-12 col-lg-6">
                                         <div class="user-meta">上次登录</div>
                                         <div class="account-value" id="lastLogin">-</div>
+                                    </div>
+                                    <div class="col-12 col-lg-6">
+                                        <div class="user-meta">已用容量</div>
+                                        <div class="account-value" id="storageUsed">-</div>
+                                    </div>
+                                    <div class="col-12 col-lg-6">
+                                        <div class="user-meta">剩余容量</div>
+                                        <div class="account-value" id="storageAvailable">-</div>
                                     </div>
                                     <div class="col-12">
                                         <div class="form-check form-switch">
@@ -207,6 +246,8 @@
             createUsername: document.getElementById('createUsername'),
             createEmail: document.getElementById('createEmail'),
             createPassword: document.getElementById('createPassword'),
+            createQuotaValue: document.getElementById('createQuotaValue'),
+            createQuotaUnit: document.getElementById('createQuotaUnit'),
             createActive: document.getElementById('createActive'),
             createSubmit: document.getElementById('createSubmit'),
             detailForm: document.getElementById('detailForm'),
@@ -214,6 +255,9 @@
             detailSubtitle: document.getElementById('detailSubtitle'),
             detailUsername: document.getElementById('detailUsername'),
             detailEmail: document.getElementById('detailEmail'),
+            detailQuotaValue: document.getElementById('detailQuotaValue'),
+            detailQuotaUnit: document.getElementById('detailQuotaUnit'),
+            detailQuotaUnlimited: document.getElementById('detailQuotaUnlimited'),
             detailActive: document.getElementById('detailActive'),
             detailSubmit: document.getElementById('detailSubmit'),
             permissionLink: document.getElementById('permissionLink'),
@@ -224,6 +268,8 @@
             superuserBadge: document.getElementById('superuserBadge'),
             dateJoined: document.getElementById('dateJoined'),
             lastLogin: document.getElementById('lastLogin'),
+            storageUsed: document.getElementById('storageUsed'),
+            storageAvailable: document.getElementById('storageAvailable'),
             passwordForm: document.getElementById('passwordForm'),
             resetPassword: document.getElementById('resetPassword'),
             passwordSubmit: document.getElementById('passwordSubmit')
@@ -241,6 +287,73 @@
             }
 
             return new Date(value).toLocaleString('zh-CN');
+        }
+
+        function formatSize(size) {
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let value = Number(size) || 0;
+            let index = 0;
+            while (value >= 1024 && index < units.length - 1) {
+                value /= 1024;
+                index += 1;
+            }
+
+            return `${value.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+        }
+
+        function formatQuota(storage) {
+            if (!storage || storage.is_unlimited) {
+                return '不限容量';
+            }
+
+            return formatSize(storage.quota_bytes);
+        }
+
+        function pickQuotaUnit(bytes) {
+            const units = [1099511627776, 1073741824, 1048576];
+            return units.find((unit) => bytes >= unit && bytes % unit === 0) || 1048576;
+        }
+
+        function trimNumber(value) {
+            return String(Number(value.toFixed(2))).replace(/\.0+$/, '');
+        }
+
+        function renderQuotaInputs(storage) {
+            if (!storage || storage.is_unlimited) {
+                elements.detailQuotaUnlimited.checked = true;
+                elements.detailQuotaValue.value = '';
+                elements.detailQuotaUnit.value = '1048576';
+                return;
+            }
+
+            const unit = pickQuotaUnit(Number(storage.quota_bytes));
+            elements.detailQuotaUnlimited.checked = false;
+            elements.detailQuotaUnit.value = String(unit);
+            elements.detailQuotaValue.value = trimNumber(Number(storage.quota_bytes) / unit);
+        }
+
+        function readQuotaBytes(valueElement, unitElement, unlimitedElement = null) {
+            if (unlimitedElement && unlimitedElement.checked) {
+                return null;
+            }
+
+            const rawValue = valueElement.value.trim();
+            if (!rawValue) {
+                return null;
+            }
+
+            const quotaValue = Number(rawValue);
+            if (!Number.isFinite(quotaValue) || quotaValue < 0) {
+                throw new Error('容量必须是非负数字。');
+            }
+
+            return Math.round(quotaValue * Number(unitElement.value));
+        }
+
+        function syncDetailQuotaControls(canEdit) {
+            elements.detailQuotaUnlimited.disabled = !canEdit;
+            elements.detailQuotaValue.disabled = !canEdit || elements.detailQuotaUnlimited.checked;
+            elements.detailQuotaUnit.disabled = !canEdit || elements.detailQuotaUnlimited.checked;
         }
 
         function setPermissionBadge(element, allowed) {
@@ -285,6 +398,8 @@
             elements.createUsername.disabled = !state.permissions.create;
             elements.createEmail.disabled = !state.permissions.create;
             elements.createPassword.disabled = !state.permissions.create;
+            elements.createQuotaValue.disabled = !state.permissions.create;
+            elements.createQuotaUnit.disabled = !state.permissions.create;
             elements.createActive.disabled = !state.permissions.create;
             elements.createSubmit.disabled = !state.permissions.create;
         }
@@ -313,7 +428,7 @@
 
                 const meta = document.createElement('div');
                 meta.className = 'user-meta mt-1';
-                meta.textContent = user.email || `ID ${user.id}`;
+                meta.textContent = `${user.email || `ID ${user.id}`} · ${formatQuota(user.storage)}`;
                 button.appendChild(meta);
 
                 button.addEventListener('click', () => selectUser(user.id));
@@ -334,17 +449,25 @@
                 elements.detailSubtitle.textContent = '未选择用户';
                 elements.detailUsername.value = '';
                 elements.detailEmail.value = '';
+                renderQuotaInputs(null);
                 elements.detailActive.checked = false;
                 elements.dateJoined.textContent = '-';
                 elements.lastLogin.textContent = '-';
+                elements.storageUsed.textContent = '-';
+                elements.storageAvailable.textContent = '-';
             } else {
                 elements.detailTitle.textContent = user.username;
                 elements.detailSubtitle.textContent = user.is_root ? 'root 用户不能被删除或更名' : `用户 ID ${user.id}`;
                 elements.detailUsername.value = user.username;
                 elements.detailEmail.value = user.email || '';
+                renderQuotaInputs(user.storage);
                 elements.detailActive.checked = user.is_active;
                 elements.dateJoined.textContent = formatDate(user.date_joined);
                 elements.lastLogin.textContent = formatDate(user.last_login);
+                elements.storageUsed.textContent = formatSize(user.storage.used_bytes);
+                elements.storageAvailable.textContent = user.storage.is_unlimited
+                    ? '不限'
+                    : formatSize(user.storage.available_bytes);
             }
 
             setBooleanBadge(elements.rootBadge, 'root', user && user.is_root, 'text-bg-warning');
@@ -354,6 +477,7 @@
 
             elements.detailUsername.disabled = !canRename;
             elements.detailEmail.disabled = !canEdit;
+            syncDetailQuotaControls(canEdit);
             elements.detailActive.disabled = !canEdit || user.is_root;
             elements.detailSubmit.disabled = !canEdit;
             elements.deleteButton.disabled = !canDelete;
@@ -438,12 +562,14 @@
 
             elements.createSubmit.disabled = true;
             try {
+                const quotaBytes = readQuotaBytes(elements.createQuotaValue, elements.createQuotaUnit);
                 const data = await fetchJson(endpoints.create, {
                     method: 'POST',
                     body: JSON.stringify({
                         username,
                         email: elements.createEmail.value.trim(),
                         password,
+                        quotaBytes,
                         isActive: elements.createActive.checked
                     })
                 });
@@ -467,11 +593,17 @@
 
             elements.detailSubmit.disabled = true;
             try {
+                const quotaBytes = readQuotaBytes(
+                    elements.detailQuotaValue,
+                    elements.detailQuotaUnit,
+                    elements.detailQuotaUnlimited
+                );
                 const data = await fetchJson(endpoints.detail(user.id), {
                     method: 'PUT',
                     body: JSON.stringify({
                         username: elements.detailUsername.value.trim(),
                         email: elements.detailEmail.value.trim(),
+                        quotaBytes,
                         isActive: elements.detailActive.checked
                     })
                 });
@@ -532,6 +664,10 @@
             } finally {
                 renderDetail();
             }
+        });
+
+        elements.detailQuotaUnlimited.addEventListener('change', () => {
+            syncDetailQuotaControls(Boolean(state.selectedUser && state.permissions.update));
         });
 
         document.addEventListener('DOMContentLoaded', boot);

@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/users/', include('sign.user_urls')),
     path('api/permissions/', include('sign.permission_urls')),
     path('api/files/', include('files.urls')),
+    path('api/sendmail/', include('sendmail.urls')),
     path('api/random32767/', include('random32767.urls')), # 自定义app
     path('api/dbtest/', include('db_test.urls')), # 注意这里加了前缀 'api/testdb/'
     # path('api/', include('your_api_app.urls')), # 如果你有API应用，取消注释并添加

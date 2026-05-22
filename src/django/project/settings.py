@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'helloworld',
     'sign',
     'files',
+    'sendmail',
     'random32767',
     'db_test',
 ]

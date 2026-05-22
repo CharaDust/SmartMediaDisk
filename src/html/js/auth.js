@@ -50,6 +50,17 @@
         document.querySelectorAll('[data-permission-required]').forEach((element) => {
             element.classList.add('d-none');
         });
+
+        document.querySelectorAll('[data-permission-any-required]').forEach((element) => {
+            element.classList.add('d-none');
+        });
+    }
+
+    function parsePermissionList(value) {
+        return (value || '')
+            .split(',')
+            .map((node) => node.trim())
+            .filter(Boolean);
     }
 
     function renderNavbarTitle(title) {
@@ -78,16 +89,24 @@
         }
 
         const permissionElements = Array.from(document.querySelectorAll('[data-permission-required]'));
-        if (user.username === 'root' || user.is_superuser) {
-            permissionElements.forEach((element) => {
+        const anyPermissionElements = Array.from(document.querySelectorAll('[data-permission-any-required]'));
+        const allPermissionElements = permissionElements.concat(anyPermissionElements);
+        const isRootUser = (user.username || '').toLowerCase() === 'root' || user.is_superuser;
+        if (isRootUser) {
+            allPermissionElements.forEach((element) => {
                 element.classList.remove('d-none');
             });
             return;
         }
 
-        const permissionNodes = Array.from(new Set(permissionElements.map((element) => {
+        const exactNodes = permissionElements.map((element) => {
             return element.getAttribute('data-permission-required');
-        })));
+        });
+        const anyNodes = anyPermissionElements.flatMap((element) => {
+            return parsePermissionList(element.getAttribute('data-permission-any-required'));
+        });
+        const permissionNodes = Array.from(new Set(exactNodes.concat(anyNodes).filter(Boolean)));
+        const allowedByNode = new Map();
 
         await Promise.all(permissionNodes.map(async (node) => {
             try {
@@ -96,20 +115,22 @@
                 });
                 const result = await response.json();
                 const allowed = response.ok && result.data && result.data.allowed;
-
-                permissionElements
-                    .filter((element) => element.getAttribute('data-permission-required') === node)
-                    .forEach((element) => {
-                        element.classList.toggle('d-none', !allowed);
-                    });
+                allowedByNode.set(node, Boolean(allowed));
             } catch (error) {
-                permissionElements
-                    .filter((element) => element.getAttribute('data-permission-required') === node)
-                    .forEach((element) => {
-                        element.classList.add('d-none');
-                    });
+                allowedByNode.set(node, false);
             }
         }));
+
+        permissionElements.forEach((element) => {
+            const node = element.getAttribute('data-permission-required');
+            element.classList.toggle('d-none', !allowedByNode.get(node));
+        });
+
+        anyPermissionElements.forEach((element) => {
+            const nodes = parsePermissionList(element.getAttribute('data-permission-any-required'));
+            const allowed = nodes.some((node) => allowedByNode.get(node));
+            element.classList.toggle('d-none', !allowed);
+        });
     }
 
     async function refreshAuthState() {

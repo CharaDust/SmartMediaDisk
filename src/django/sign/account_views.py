@@ -7,6 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from .models import SiteSetting
 from .permission_service import is_root_user, user_has_permission
+from .quota_service import get_user_storage_summary
 
 
 USERNAME_UPDATE_PERMISSION = 'account.username.update'
@@ -68,6 +69,7 @@ def _serialize_account(user):
         'is_superuser': user.is_superuser,
         'date_joined': user.date_joined.isoformat(),
         'last_login': user.last_login.isoformat() if user.last_login else None,
+        'storage': get_user_storage_summary(user),
         'settings': {
             'navbar_title': _get_navbar_title(),
         },
