@@ -75,6 +75,11 @@
             const response = await fetch(navbarTitleUrl, {
                 credentials: 'same-origin'
             });
+            const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+            if (!contentType.includes('application/json')) {
+                renderNavbarTitle('Media Cube');
+                return;
+            }
             const result = await response.json();
             const title = result.data && result.data.navbar_title;
             renderNavbarTitle(title);
@@ -113,6 +118,11 @@
                 const response = await fetch(`${permissionCheckUrl}?node=${encodeURIComponent(node)}`, {
                     credentials: 'same-origin'
                 });
+                const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+                if (!contentType.includes('application/json')) {
+                    allowedByNode.set(node, false);
+                    return;
+                }
                 const result = await response.json();
                 const allowed = response.ok && result.data && result.data.allowed;
                 allowedByNode.set(node, Boolean(allowed));
@@ -141,6 +151,12 @@
             const response = await fetch(sessionUrl, {
                 credentials: 'same-origin'
             });
+            const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+            if (!contentType.includes('application/json')) {
+                renderAuthState(storedUser);
+                await renderPermissionLinks(storedUser);
+                return;
+            }
             const result = await response.json();
             const user = result.data && result.data.authenticated ? result.data.user : null;
 

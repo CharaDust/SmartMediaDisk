@@ -1,9 +1,14 @@
 import json
+import logging
+import traceback
 
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
+
+logger = logging.getLogger(__name__)
 
 
 def _json_error(message, status):
@@ -14,6 +19,13 @@ def _json_error(message, status):
         },
         status=status,
     )
+
+
+def _get_exception_message(exception):
+    """Return a safe diagnostic message for the given exception."""
+    if settings.DEBUG:
+        return f'{type(exception).__name__}: {exception}'
+    return 'Internal server error.'
 
 
 def _read_payload(request):
@@ -39,6 +51,14 @@ def _serialize_user(user):
 @csrf_exempt
 @require_POST
 def sign_in(request):
+    try:
+        return _sign_in_impl(request)
+    except Exception as exc:
+        logger.exception('sign_in failed')
+        return _json_error(_get_exception_message(exc), 500)
+
+
+def _sign_in_impl(request):
     payload = _read_payload(request)
     if payload is None:
         return _json_error('Invalid JSON payload.', 400)
@@ -70,6 +90,14 @@ def sign_in(request):
 
 @require_GET
 def session_status(request):
+    try:
+        return _session_status_impl(request)
+    except Exception as exc:
+        logger.exception('session_status failed')
+        return _json_error(_get_exception_message(exc), 500)
+
+
+def _session_status_impl(request):
     user = request.user
     if not user.is_authenticated:
         return JsonResponse(
@@ -96,7 +124,11 @@ def session_status(request):
 @csrf_exempt
 @require_POST
 def sign_out(request):
-    logout(request)
+    try:
+        logout(request)
+    except Exception as exc:
+        logger.exception('sign_out failed')
+        return _json_error(_get_exception_message(exc), 500)
     return JsonResponse(
         {
             'status': 'success',

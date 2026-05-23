@@ -1,5 +1,8 @@
 import json
+import logging
+import traceback
 
+from django.conf import settings
 from django.contrib.auth import get_user_model, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +11,8 @@ from django.views.decorators.http import require_GET, require_POST
 from .models import SiteSetting
 from .permission_service import is_root_user, user_has_permission
 from .quota_service import get_user_storage_summary
+
+logger = logging.getLogger(__name__)
 
 
 USERNAME_UPDATE_PERMISSION = 'account.username.update'
@@ -26,6 +31,13 @@ def _json_error(message, status):
         },
         status=status,
     )
+
+
+def _get_exception_message(exception):
+    """Return a safe diagnostic message for the given exception."""
+    if settings.DEBUG:
+        return f'{type(exception).__name__}: {exception}'
+    return 'Internal server error.'
 
 
 def _read_payload(request):
@@ -86,6 +98,14 @@ def _serialize_account(user):
 
 @require_GET
 def account_detail(request):
+    try:
+        return _account_detail_impl(request)
+    except Exception as exc:
+        logger.exception('account_detail failed')
+        return _json_error(_get_exception_message(exc), 500)
+
+
+def _account_detail_impl(request):
     auth_error = _require_authenticated(request)
     if auth_error:
         return auth_error
@@ -103,21 +123,33 @@ def account_detail(request):
 @require_GET
 def navbar_title(request):
     """Return the public navigation bar title setting."""
-    return JsonResponse(
-        {
-            'status': 'success',
-            'data': {
-                'navbar_title': _get_navbar_title(),
-                'default_navbar_title': DEFAULT_NAVBAR_TITLE,
-            },
-        }
-    )
+    try:
+        return JsonResponse(
+            {
+                'status': 'success',
+                'data': {
+                    'navbar_title': _get_navbar_title(),
+                    'default_navbar_title': DEFAULT_NAVBAR_TITLE,
+                },
+            }
+        )
+    except Exception as exc:
+        logger.exception('navbar_title failed')
+        return _json_error(_get_exception_message(exc), 500)
 
 
 @csrf_exempt
 @require_POST
 def update_navbar_title(request):
     """Update the navigation bar title when the user has permission."""
+    try:
+        return _update_navbar_title_impl(request)
+    except Exception as exc:
+        logger.exception('update_navbar_title failed')
+        return _json_error(_get_exception_message(exc), 500)
+
+
+def _update_navbar_title_impl(request):
     auth_error = _require_authenticated(request)
     if auth_error:
         return auth_error
@@ -152,6 +184,14 @@ def update_navbar_title(request):
 @csrf_exempt
 @require_POST
 def update_username(request):
+    try:
+        return _update_username_impl(request)
+    except Exception as exc:
+        logger.exception('update_username failed')
+        return _json_error(_get_exception_message(exc), 500)
+
+
+def _update_username_impl(request):
     auth_error = _require_authenticated(request)
     if auth_error:
         return auth_error
@@ -195,6 +235,14 @@ def update_username(request):
 @csrf_exempt
 @require_POST
 def update_password(request):
+    try:
+        return _update_password_impl(request)
+    except Exception as exc:
+        logger.exception('update_password failed')
+        return _json_error(_get_exception_message(exc), 500)
+
+
+def _update_password_impl(request):
     auth_error = _require_authenticated(request)
     if auth_error:
         return auth_error
