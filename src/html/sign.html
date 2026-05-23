@@ -108,6 +108,14 @@
                     },
                     body: JSON.stringify({ username, password, rememberMe })
                 });
+
+                const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+                if (!contentType.includes('application/json')) {
+                    const text = (await response.text()).slice(0, 200);
+                    setMessage('服务返回异常 (HTTP ' + response.status + ')，请查看服务端日志。', 'danger');
+                    return;
+                }
+
                 const result = await response.json();
 
                 if (!response.ok) {
