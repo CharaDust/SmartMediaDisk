@@ -325,21 +325,7 @@
         </div>
     </div>
 
-    <script>
-        function updateTime() {
-            const now = new Date();
-            // const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const optionshhmm = { hour: '2-digit', minute: '2-digit' };
-            const formattedTime = now.toLocaleDateString('zh-CN', optionshhmm).replace(/\//g, '-');
-            document.getElementById('current-time').textContent = formattedTime;
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            // 设置初始时间
-            updateTime();
-            // 每秒更新一次时间
-            setInterval(updateTime, 1000);
-        });
-    </script>
+    <script src="/js/index-time.js"></script>
     <script src="/js/api/files.js"></script>
     <script src="/js/home-page.js?v=20260521-pinned-tools"></script>
 </body>

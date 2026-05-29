@@ -78,6 +78,27 @@ def user_has_permission(user, node):
     return False
 
 
+DEFAULT_OWN_PERMISSION_NODES = [
+    'files.list.own',
+    'files.upload.own',
+    'files.download.own',
+    'files.rename.own',
+    'files.move.own',
+    'files.delete.own',
+    'files.share.own',
+]
+
+
+def grant_default_permissions(user):
+    """Grant a new user the default file self-operation permissions."""
+    for node in DEFAULT_OWN_PERMISSION_NODES:
+        UserPermission.objects.get_or_create(
+            user=user,
+            node=node,
+            defaults={'value': True},
+        )
+
+
 def serialize_user_permission(permission):
     """Serialize a direct user permission row."""
     return {
