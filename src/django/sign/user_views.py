@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from .permission_service import is_root_user, user_has_permission
+from .permission_service import grant_default_permissions, is_root_user, user_has_permission
 from .quota_service import get_user_storage_summary, normalize_quota_bytes, set_user_quota_bytes
 
 
@@ -169,6 +169,7 @@ def create_user(request):
     )
     user.set_password(password)
     user.save()
+    grant_default_permissions(user)
     if 'quotaBytes' in payload:
         set_user_quota_bytes(user, quota_bytes)
 
